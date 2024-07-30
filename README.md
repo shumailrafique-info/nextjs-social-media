@@ -1,4 +1,4 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/create-next-app).
+This is a [Next.js 15](https://nextjs.org) social media project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/create-next-app).
 
 ## Getting Started
 
@@ -12,6 +12,15 @@ yarn dev
 pnpm dev
 # or
 bun dev
+```
+
+## ENV files
+
+Required env files to run this project on your local:
+
+```bash
+# postgresql database url
+DATABASE_URL="postgresql://postgres:2002113@localhost:5432/social"
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
