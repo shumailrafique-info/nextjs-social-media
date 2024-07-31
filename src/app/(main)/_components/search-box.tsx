@@ -29,7 +29,7 @@ const SearchBox = ({}: Props) => {
         type="text"
         name="q"
         placeholder="Search here..."
-        className="max-h-[34px] pr-[35px]"
+        className="max-h-[34px] bg-gray-100 pr-[35px] dark:bg-black"
       />
       <button
         type="submit"
