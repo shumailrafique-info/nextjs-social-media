@@ -1,7 +1,9 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { logout } from "@/app/(auth)/actions";
 import { useSession } from "@/app/(main)/_providers/session-provider";
+import { ModeToggle } from "@/app/_components/theme-toggle";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,10 +14,9 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Image from "next/image";
+import { cn } from "@/lib/utils";
+import { ColorWheelIcon } from "@radix-ui/react-icons";
 import { LogOut, User } from "lucide-react";
-import { logout } from "@/app/(auth)/actions";
 import Link from "next/link";
 
 interface Props {
@@ -47,6 +48,15 @@ const UserButton = ({ className }: Props) => {
             </DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>
+        <ModeToggle>
+          <DropdownMenuGroup asChild>
+            <DropdownMenuItem className="!cursor-pointer">
+              <ColorWheelIcon className="mr-2 h-4 w-4" />
+              <span>Theme</span>
+              <DropdownMenuShortcut>⇧⌘T</DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </ModeToggle>
         <DropdownMenuSeparator />
 
         <DropdownMenuItem

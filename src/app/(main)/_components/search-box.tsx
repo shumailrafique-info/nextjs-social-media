@@ -23,7 +23,7 @@ const SearchBox = ({}: Props) => {
       onSubmit={handleSubmit}
       method={"GET"}
       action={"/search"}
-      className="relative bg-gray-50"
+      className="relative"
     >
       <Input
         type="text"
