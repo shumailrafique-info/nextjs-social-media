@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { ColorWheelIcon } from "@radix-ui/react-icons";
+import { useQueryClient } from "@tanstack/react-query";
 import { LogOut, User } from "lucide-react";
 import Link from "next/link";
 
@@ -25,6 +26,9 @@ interface Props {
 
 const UserButton = ({ className }: Props) => {
   const { user } = useSession();
+
+  const queryClient = useQueryClient();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="!outline-none !ring-0">
@@ -62,6 +66,7 @@ const UserButton = ({ className }: Props) => {
         <DropdownMenuItem
           className="!cursor-pointer hover:!bg-red-500 hover:!text-white"
           onClick={async () => {
+            queryClient.clear();
             await logout();
           }}
         >
