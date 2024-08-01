@@ -1,40 +1,50 @@
 "use client";
+import InfiniteScrollContainer from "@/app/_components/infinite-scroll-container";
 import Post from "@/app/_components/posts/post";
-import { postData } from "@/lib/types";
-import { useQuery } from "@tanstack/react-query";
-import PostSkeleton from "./post-skeleton";
 import kyInstance from "@/lib/ky";
+import { postData } from "@/lib/types";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import PostSkeleton from "./post-skeleton";
 
-interface ApiResponse {
-  success: boolean;
-  data: {
-    posts: postData[];
-  };
+export interface PostPage {
+  posts: postData[];
+  nextCursor: string | null;
 }
 
-const fetchPosts = async (): Promise<postData[]> => {
-  const response: ApiResponse = await kyInstance
-    .get("/api/posts/for-you")
+export interface PostsApiResponse {
+  success: boolean;
+  data: PostPage;
+}
+
+const fetchPosts = async (searchParams: string | null): Promise<PostPage> => {
+  const response: PostsApiResponse = await kyInstance
+    .get(
+      "/api/posts/for-you",
+      searchParams ? { searchParams: { cursor: searchParams } } : {}
+    )
     .json();
   if (!response.success) {
     throw new Error("Failed to fetch posts");
   }
-  return response.data.posts;
+  return response.data;
 };
 
 interface Props {}
 
 const ForYouPosts = ({}: Props) => {
-  const query = useQuery<postData[]>({
-    queryKey: ["posts", "for-you"],
-    queryFn: fetchPosts,
-    // staleTime: 1000 * 60 * 5, // 5 minutes
-  });
+  const { data, fetchNextPage, isFetching, isFetchingNextPage, status, error } =
+    useInfiniteQuery<PostPage>({
+      queryKey: ["posts", "for-you"],
+      queryFn: ({ pageParam }: any) => fetchPosts(pageParam ? pageParam : ""),
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      initialPageParam: null as string | null,
+      // staleTime: 1000 * 60 * 5, // 5 minutes
+    });
 
-  if (query.status === "pending") return <PostSkeleton />;
+  if (status === "pending" && !isFetchingNextPage) return <PostSkeleton />;
 
-  if (query.status === "error") {
-    console.log(query.error);
+  if (status === "error") {
+    console.log(error);
     return (
       <p className="text-center text-destructive">
         An error occured while loading posts.
@@ -42,11 +52,19 @@ const ForYouPosts = ({}: Props) => {
     );
   }
 
+  const posts = data?.pages.flatMap((page) => page.posts) || [];
+
   return (
     <div className="space-y-3">
-      {query.data?.map((post) => (
-        <Post key={post.id} post={post} />
-      ))}
+      <InfiniteScrollContainer
+        className="space-y-3"
+        onBottomReached={fetchNextPage}
+      >
+        {posts?.map((post) => (
+          <Post key={post.id} post={post} />
+        ))}
+      </InfiniteScrollContainer>
+      {isFetching && <PostSkeleton />}
     </div>
   );
 };
