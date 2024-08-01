@@ -32,16 +32,32 @@ const fetchPosts = async (searchParams: string | null): Promise<PostPage> => {
 interface Props {}
 
 const ForYouPosts = ({}: Props) => {
-  const { data, fetchNextPage, isFetching, isFetchingNextPage, status, error } =
-    useInfiniteQuery<PostPage>({
-      queryKey: ["posts", "for-you"],
-      queryFn: ({ pageParam }: any) => fetchPosts(pageParam ? pageParam : ""),
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialPageParam: null as string | null,
-      // staleTime: 1000 * 60 * 5, // 5 minutes
-    });
+  const {
+    data,
+    fetchNextPage,
+    isFetching,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+    error,
+  } = useInfiniteQuery<PostPage>({
+    queryKey: ["posts", "for-you"],
+    queryFn: ({ pageParam }: any) => fetchPosts(pageParam ? pageParam : ""),
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    initialPageParam: null as string | null,
+    // staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+
+  const posts = data?.pages.flatMap((page) => page.posts) || [];
 
   if (status === "pending" && !isFetchingNextPage) return <PostSkeleton />;
+
+  if (status === "success" && !posts.length && !hasNextPage)
+    return (
+      <p className="text-center text-muted-foreground">
+        No one has poseted anything yet
+      </p>
+    );
 
   if (status === "error") {
     console.log(error);
@@ -52,19 +68,21 @@ const ForYouPosts = ({}: Props) => {
     );
   }
 
-  const posts = data?.pages.flatMap((page) => page.posts) || [];
-
   return (
     <div className="space-y-3">
       <InfiniteScrollContainer
         className="space-y-3"
-        onBottomReached={fetchNextPage}
+        onBottomReached={() => hasNextPage && !isFetching && fetchNextPage()}
       >
+        <PostSkeleton />
         {posts?.map((post) => (
           <Post key={post.id} post={post} />
         ))}
       </InfiniteScrollContainer>
-      {isFetching && <PostSkeleton />}
+      {isFetchingNextPage && <PostSkeleton />}
+      {status === "success" && !hasNextPage && (
+        <p className="text-center text-muted-foreground">No more posts.</p>
+      )}
     </div>
   );
 };
