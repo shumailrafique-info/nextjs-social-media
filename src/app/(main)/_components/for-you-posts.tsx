@@ -74,7 +74,6 @@ const ForYouPosts = ({}: Props) => {
         className="space-y-3"
         onBottomReached={() => hasNextPage && !isFetching && fetchNextPage()}
       >
-        <PostSkeleton />
         {posts?.map((post) => (
           <Post key={post.id} post={post} />
         ))}
