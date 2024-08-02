@@ -1,13 +1,8 @@
 "use client";
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Placeholder from "@tiptap/extension-placeholder";
-import { createPost } from "./actions";
-import { useTransition } from "react";
+import { PostPage } from "@/app/(main)/_components/for-you-posts";
 import { useSession } from "@/app/(main)/_providers/session-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import "./styles.css";
 import { useToast } from "@/components/ui/use-toast";
 import {
   InfiniteData,
@@ -15,8 +10,11 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { PostPage } from "@/app/(main)/_components/for-you-posts";
-import { postData } from "@/lib/types";
+import Placeholder from "@tiptap/extension-placeholder";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import { createPost } from "./actions";
+import "./styles.css";
 
 interface Props {}
 
