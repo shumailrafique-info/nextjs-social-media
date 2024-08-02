@@ -27,6 +27,8 @@ model User {
   posts        Post[]
 
   createdAt DateTime @default(now())
+  followers Follow[] @relation("Followers") //users who are following this user
+  following Follow[] @relation("Following") //users who are followed by this user
 
   @@map("users")
 }
@@ -50,4 +52,15 @@ model Post {
   createdAt DateTime @default(now())
 
   @@map("posts")
+}
+
+model Follow {
+  id          String @id @default(uuid())
+  followerId  String
+  follower    User   @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  followingId String
+  following   User   @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@map("follows")
 }

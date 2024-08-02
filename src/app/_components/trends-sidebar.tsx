@@ -1,13 +1,13 @@
 import { validateRequest } from "@/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import prisma from "@/lib/prisma";
-import { userDataSelect } from "@/lib/types";
+import { getUserDataSelect } from "@/lib/types";
 import { formatNumber } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { unstable_cache } from "next/cache";
 import Link from "next/link";
 import { Suspense } from "react";
+import FollowButton from "../(main)/_components/follow-button";
 
 interface Props {}
 
@@ -34,36 +34,59 @@ const ShowNotFollowingList = async () => {
       NOT: {
         id: user.id,
       },
+      followers: {
+        none: {
+          followerId: user.id,
+        },
+      },
     },
-    select: userDataSelect,
+    select: getUserDataSelect(user.id),
     take: 5,
   });
 
   return (
     <div className="space-y-4 rounded-2xl bg-card p-5 shadow-md dark:border">
       <h3 className="text-xl font-bold">You may follow</h3>
-      {notFollowingList?.map((user) => (
-        <div key={user.id} className="flex items-center justify-between gap-3">
-          <Link
-            href={`/users/${user.username}`}
-            className="flex items-center gap-2"
+      {notFollowingList.length > 0 ? (
+        notFollowingList?.map((user) => (
+          <div
+            key={user.id}
+            className="flex items-center justify-between gap-3"
           >
-            <Avatar className="max-h-[40px] max-w-[40px]">
-              <AvatarImage src={user.avatarUrl || ""} alt={user.displayName} />
-              <AvatarFallback>SR</AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="line-clamp-1 break-all font-[500] leading-[1.3] hover:underline">
-                {user?.displayName}
-              </p>
-              <p className="line-clamp-1 break-all text-[12px] text-muted-foreground">
-                @{user?.username}
-              </p>
-            </div>
-          </Link>
-          <Button className="rounded-2xl">Follow</Button>
-        </div>
-      ))}
+            <Link
+              href={`/users/${user.username}`}
+              className="flex items-center gap-2"
+            >
+              <Avatar className="max-h-[40px] max-w-[40px]">
+                <AvatarImage
+                  src={user.avatarUrl || ""}
+                  alt={user.displayName}
+                />
+                <AvatarFallback>SR</AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="line-clamp-1 break-all font-[500] leading-[1.3] hover:underline">
+                  {user?.displayName}
+                </p>
+                <p className="line-clamp-1 break-all text-[12px] text-muted-foreground">
+                  @{user?.username}
+                </p>
+              </div>
+            </Link>
+            <FollowButton
+              userId={user.id}
+              initialState={{
+                isFollowedByUser: user.followers.some(
+                  ({ followerId }) => followerId === user.id
+                ),
+                followers: user._count.followers,
+              }}
+            />
+          </div>
+        ))
+      ) : (
+        <p>No users to show.</p>
+      )}
     </div>
   );
 };

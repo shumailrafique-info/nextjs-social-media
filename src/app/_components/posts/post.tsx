@@ -44,7 +44,7 @@ const Post = ({ post }: Props) => {
         </div>
         {/* Post actions  */}
         {post.userId === user.id && (
-          <div className="opacity-0 transition group-hover/post:opacity-[1]">
+          <div className="flex items-center justify-center opacity-0 transition group-hover/post:opacity-[1]">
             {<MoreOptionPostButton post={post} />}
           </div>
         )}

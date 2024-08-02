@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { postData } from "@/lib/types";
-import useDeletePostMutation from "./post-delete/mutation";
+import useDeletePostMutation from "./mutation";
 import { Button } from "@/components/ui/button";
 
 interface DeletePostDialogProps {

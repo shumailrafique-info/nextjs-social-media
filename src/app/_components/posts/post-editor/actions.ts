@@ -1,7 +1,7 @@
 "use server";
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
-import { postDataInclude } from "@/lib/types";
+import { getPostDataInclude } from "@/lib/types";
 import { postSchema } from "@/lib/validation";
 import * as z from "zod";
 
@@ -23,7 +23,7 @@ export async function createPost(values: z.infer<typeof postSchema>) {
       content,
       userId: user.id,
     },
-    include: postDataInclude,
+    include: getPostDataInclude(user.id),
   });
   return { success: true, newPost: newPost };
 }

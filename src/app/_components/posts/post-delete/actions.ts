@@ -1,7 +1,7 @@
 "use server";
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
-import { postDataInclude } from "@/lib/types";
+import { getPostDataInclude } from "@/lib/types";
 
 export async function deletePost(postId: string) {
   const { user } = await validateRequest();
@@ -18,7 +18,7 @@ export async function deletePost(postId: string) {
     where: {
       id: postId,
     },
-    include: postDataInclude,
+    include: getPostDataInclude(user.id),
   });
 
   if (!post) throw new Error("post not found invalid postId");
@@ -29,7 +29,7 @@ export async function deletePost(postId: string) {
     where: {
       id: postId,
     },
-    include: postDataInclude,
+    include: getPostDataInclude(user.id),
   });
 
   return { success: true, deletedPost };

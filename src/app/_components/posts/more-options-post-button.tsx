@@ -1,7 +1,7 @@
 "use client";
 
 import { postData } from "@/lib/types";
-import DeletePostDialog from "./delete-post-dialog";
+import DeletePostDialog from "./post-delete/delete-post-dialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
