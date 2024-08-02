@@ -27,8 +27,6 @@ export async function GET(req: NextRequest) {
 
     const nextCursor = posts.length > limit ? posts[limit].id : null;
 
-    await new Promise((r) => setTimeout(r, 3000));
-
     return Response.json({
       success: true,
       data: { posts: posts.slice(0, limit), nextCursor },

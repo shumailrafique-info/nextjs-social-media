@@ -8,11 +8,23 @@ import { useSession } from "@/app/(main)/_providers/session-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import "./styles.css";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  InfiniteData,
+  QueryFilters,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { PostPage } from "@/app/(main)/_components/for-you-posts";
+import { postData } from "@/lib/types";
+
 interface Props {}
 
 const PostEditor = ({}: Props) => {
-  const [isPending, startTransition] = useTransition();
+  //auth
   const { user } = useSession();
+
+  //Editor Configrations
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -26,20 +38,75 @@ const PostEditor = ({}: Props) => {
     content: "",
   });
 
+  //Input
   const input =
     editor?.getText({
       blockSeparator: "\n",
     }) || "";
 
+  //toast trigger
+  const { toast } = useToast();
+
+  //gettting query client
+  const queryClient = useQueryClient();
+
+  //Mutation for Invalidating and creating new cache data with new post
+  const mutation = useMutation({
+    mutationFn: createPost,
+    onSuccess: async ({ newPost }) => {
+      editor?.commands.clearContent();
+
+      const queryFilter: QueryFilters = {
+        queryKey: ["posts", "for-you"],
+      };
+
+      await queryClient.cancelQueries(queryFilter);
+
+      queryClient.setQueriesData<InfiniteData<PostPage, string | null>>(
+        queryFilter,
+        (oldData) => {
+          const firstPage = oldData?.pages[0];
+
+          if (firstPage) {
+            return {
+              pageParams: oldData.pageParams,
+              pages: [
+                {
+                  posts: [newPost, ...firstPage.posts],
+                  nextCursor: firstPage.nextCursor,
+                },
+                ...oldData.pages.slice(1),
+              ],
+            };
+          }
+        }
+      );
+
+      queryClient.invalidateQueries({
+        queryKey: queryFilter.queryKey,
+        predicate(query) {
+          return !query.state.data;
+        },
+      });
+
+      toast({
+        variant: "default",
+        description: "Post created successfully!",
+      });
+    },
+    onError: (err) => {
+      console.log(err);
+      toast({
+        variant: "destructive",
+        description: "Failed to create post. Please try again.",
+      });
+    },
+  });
+
+  //Submit Handler
   const handleSubmit = async () => {
     if (!input) return;
-    startTransition(async () => {
-      await createPost({ content: input }).then((res) => {
-        if (res?.success) {
-          editor?.commands.clearContent();
-        }
-      });
-    });
+    mutation.mutate({ content: input });
   };
 
   return (
@@ -57,10 +124,10 @@ const PostEditor = ({}: Props) => {
       <div className="flex w-full justify-end">
         <Button
           type="button"
-          loading={isPending}
+          loading={mutation.isPending}
           loadingText="Posting"
           className="dark:text-white"
-          disabled={!input || isPending}
+          disabled={!input || mutation.isPending}
           onClick={handleSubmit}
         >
           Post

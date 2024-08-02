@@ -1,6 +1,7 @@
 "use server";
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
+import { postDataInclude } from "@/lib/types";
 import { postSchema } from "@/lib/validation";
 import * as z from "zod";
 
@@ -14,16 +15,15 @@ export async function createPost(values: z.infer<typeof postSchema>) {
   const { content } = postSchema.parse(values);
 
   if (!content) {
-    return {
-      error: "Invalid values",
-    };
+    throw new Error("Invalid content");
   }
 
-  const post = await prisma.post.create({
+  const newPost = await prisma.post.create({
     data: {
       content,
       userId: user.id,
     },
+    include: postDataInclude,
   });
-  return { success: true };
+  return { success: true, newPost: newPost };
 }
