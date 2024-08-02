@@ -54,9 +54,16 @@ const PostEditor = ({}: Props) => {
     onSuccess: async ({ newPost }) => {
       editor?.commands.clearContent();
 
-      const queryFilter: QueryFilters = {
-        queryKey: ["posts", "for-you"],
-      };
+      const queryFilter = {
+        queryKey: ["posts"],
+        predicate(query) {
+          return (
+            query.queryKey.includes("for-you") ||
+            (query.queryKey.includes("user-posts") &&
+              query.queryKey.includes(user.id))
+          );
+        },
+      } satisfies QueryFilters;
 
       await queryClient.cancelQueries(queryFilter);
 
@@ -83,7 +90,7 @@ const PostEditor = ({}: Props) => {
       queryClient.invalidateQueries({
         queryKey: queryFilter.queryKey,
         predicate(query) {
-          return !query.state.data;
+          return queryFilter.predicate(query) && !query.state.data;
         },
       });
 

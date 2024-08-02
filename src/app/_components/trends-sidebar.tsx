@@ -85,7 +85,7 @@ const ShowNotFollowingList = async () => {
           </div>
         ))
       ) : (
-        <p>No users to show.</p>
+        <p>Already following all users.</p>
       )}
     </div>
   );

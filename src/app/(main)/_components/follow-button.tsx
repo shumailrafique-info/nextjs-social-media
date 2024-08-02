@@ -24,14 +24,14 @@ const FollowButton = ({ userId, initialState }: Props) => {
 
   //mutation
 
+  const queryKey: QueryKey = ["follower-info", userId];
+
   const { mutate, isPending } = useMutation({
     mutationFn: () =>
       data.isFollowedByUser
         ? kyInstance.delete(`/api/users/${userId}/followers`)
         : kyInstance.post(`/api/users/${userId}/followers`),
     onMutate: async () => {
-      const queryKey: QueryKey = ["follower-info", userId];
-
       await queryClient.cancelQueries({ queryKey });
 
       const previousState =
@@ -46,16 +46,13 @@ const FollowButton = ({ userId, initialState }: Props) => {
       return { previousState };
     },
     onError(error, variables, context) {
-      const queryKey: QueryKey = ["follower-info", userId];
-      if (context?.previousState) {
-        queryClient.setQueryData<followerInformation>(queryKey, () => ({
-          followers: context?.previousState?.followers!,
-          isFollowedByUser: context?.previousState?.isFollowedByUser!,
-        }));
-      }
+      queryClient.setQueryData<followerInformation>(
+        queryKey,
+        context?.previousState
+      );
       toast({
         variant: "destructive",
-        description: "Something went wrong, please try again",
+        description: "Something went wrong, please try again.",
       });
     },
   });
@@ -65,7 +62,7 @@ const FollowButton = ({ userId, initialState }: Props) => {
       onClick={() => {
         mutate();
       }}
-      className="rounded-2xl"
+      className={`rounded-2xl`}
       disabled={isPending}
       variant={data.isFollowedByUser ? "outline" : "default"}
     >
