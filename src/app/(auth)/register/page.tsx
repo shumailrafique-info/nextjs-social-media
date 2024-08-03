@@ -21,8 +21,8 @@ interface Props {}
 
 const Register = async ({}: Props) => {
   return (
-    <div className="flex h-full min-h-[650px] w-full items-center justify-center py-10">
-      <Card className="w-full max-w-[400px]">
+    <div className="flex h-full w-full items-center justify-center">
+      <Card className="w-full">
         <CardHeader>
           <CardTitle className="flex items-center justify-center gap-2 text-center text-2xl">
             <p className="leading-[1]">Register</p>
