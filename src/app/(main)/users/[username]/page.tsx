@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import ProfilePagePosts from "../../_components/profile-page.posts";
 import { User } from "lucide-react";
 import Image from "next/image";
+import LinkifyContent from "@/app/_components/linkify-content";
 
 interface Props {
   params: { username: string };
@@ -152,7 +153,11 @@ async function UserProfile({ user, loggedInUserId }: userProfileProps) {
       {user.bio && (
         <>
           <hr />
-          <div className="text-gray-600 dark:text-gray-400">{user.bio}</div>
+          <LinkifyContent>
+            <div className="line-clamp-4 whitespace-pre-line break-words text-gray-600 dark:text-gray-400">
+              {user.bio}
+            </div>
+          </LinkifyContent>
         </>
       )}
     </div>

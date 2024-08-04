@@ -6,6 +6,8 @@ import { formateRelativeDate } from "@/lib/utils";
 import Link from "next/link";
 import MoreOptionPostButton from "./more-options-post-button";
 import { useSession } from "@/app/(main)/_providers/session-provider";
+import LinkifyContent from "../linkify-content";
+import UserTooltip from "../user-tooltip";
 
 interface Props {
   post: postData;
@@ -18,15 +20,17 @@ const Post = ({ post }: Props) => {
       <div className="flex items-center justify-between gap-3">
         {/* Post user info  */}
         <div className="flex flex-wrap gap-3">
-          <Link href={`/users/${post.user.username}`}>
-            <Avatar className="max-h-[40px] max-w-[40px]">
-              <AvatarImage
-                src={post.user.avatarUrl || ""}
-                alt={post.user.displayName}
-              />
-              <AvatarFallback>SR</AvatarFallback>
-            </Avatar>
-          </Link>
+          <UserTooltip user={post.user}>
+            <Link href={`/users/${post.user.username}`}>
+              <Avatar className="max-h-[40px] max-w-[40px]">
+                <AvatarImage
+                  src={post.user.avatarUrl || ""}
+                  alt={post.user.displayName}
+                />
+                <AvatarFallback>SR</AvatarFallback>
+              </Avatar>
+            </Link>
+          </UserTooltip>
           <div className="flex flex-col items-start">
             <Link
               href={`/users/${post.user.username}`}
@@ -51,7 +55,9 @@ const Post = ({ post }: Props) => {
       </div>
 
       {/*Post Content  */}
-      <div className="!whitespace-pre-wrap break-words">{post.content}</div>
+      <LinkifyContent>
+        <div className="whitespace-pre-wrap break-words">{post.content}</div>
+      </LinkifyContent>
     </article>
   );
 };

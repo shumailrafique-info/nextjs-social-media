@@ -8,6 +8,7 @@ import { unstable_cache } from "next/cache";
 import Link from "next/link";
 import { Suspense } from "react";
 import FollowButton from "../(main)/_components/follow-button";
+import UserTooltip from "./user-tooltip";
 
 interface Props {}
 
@@ -53,26 +54,29 @@ const ShowNotFollowingList = async () => {
             key={user.id}
             className="flex items-center justify-between gap-3"
           >
-            <Link
-              href={`/users/${user.username}`}
-              className="flex items-center gap-2"
-            >
-              <Avatar className="max-h-[40px] max-w-[40px]">
-                <AvatarImage
-                  src={user.avatarUrl || ""}
-                  alt={user.displayName}
-                />
-                <AvatarFallback>SR</AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="line-clamp-1 break-all font-[500] leading-[1.3] hover:underline">
-                  {user?.displayName}
-                </p>
-                <p className="line-clamp-1 break-all text-[12px] text-muted-foreground">
-                  @{user?.username}
-                </p>
-              </div>
-            </Link>
+            <UserTooltip user={user}>
+              <Link
+                href={`/users/${user.username}`}
+                className="flex items-center gap-2"
+              >
+                <Avatar className="max-h-[40px] max-w-[40px]">
+                  <AvatarImage
+                    src={user.avatarUrl || ""}
+                    alt={user.displayName}
+                  />
+                  <AvatarFallback>SR</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="line-clamp-1 break-all font-[500] leading-[1.3] hover:underline">
+                    {user?.displayName}
+                  </p>
+                  <p className="line-clamp-1 break-all text-[12px] text-muted-foreground">
+                    @{user?.username}
+                  </p>
+                </div>
+              </Link>
+            </UserTooltip>
+
             <FollowButton
               userId={user.id}
               initialState={{
