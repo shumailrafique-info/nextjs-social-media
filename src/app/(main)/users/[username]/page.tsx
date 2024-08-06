@@ -16,6 +16,7 @@ import ProfilePagePosts from "../../_components/profile-page.posts";
 import { User } from "lucide-react";
 import Image from "next/image";
 import LinkifyContent from "@/app/_components/linkify-content";
+import EditProfileButton from "./edit-profile-button";
 
 interface Props {
   params: { username: string };
@@ -101,8 +102,8 @@ async function UserProfile({ user, loggedInUserId }: userProfileProps) {
           height={220}
         />
       ) : (
-        <div className="mx-auto flex size-[220px] items-center justify-center rounded-full border border-[black]/40 shadow-md dark:border-card">
-          <User className="size-[170px] shrink-0" />
+        <div className="mx-auto flex size-[220px] items-center justify-center rounded-full border border-[black]/40 shadow-md dark:border-primary/20">
+          <User className="shrink-0" size={150} />
         </div>
       )}
 
@@ -146,7 +147,7 @@ async function UserProfile({ user, loggedInUserId }: userProfileProps) {
               userId={user.id}
             />
           ) : (
-            <Button variant={"default"}>Edit Profile</Button>
+            <EditProfileButton user={user} />
           )}
         </div>
       </div>

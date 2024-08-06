@@ -64,8 +64,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {loading ? (
-          <div className="flex items-center gap-1">
-            <Loader2 className="size-[21px] animate-spin" />
+          <div className="flex items-center justify-center gap-1">
+            <Loader2 className="size-[20px] animate-spin" />
             {loadingText && loadingText}
           </div>
         ) : (

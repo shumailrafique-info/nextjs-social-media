@@ -19,3 +19,21 @@ export const loginSchema = z.object({
 export const postSchema = z.object({
   content: requiredString,
 });
+
+// Define individual validation checks
+const validCharacters = /^[A-Za-z0-9 _-]+$/;
+const noConsecutiveSpaces = /^(?!.*\s{2,}).*$/;
+const correctSpacing = /^[A-Za-z0-9_-]+(?: [A-Za-z0-9_-]+)*$/;
+
+export const editUserProfileSchema = z.object({
+  displayName: requiredString
+    .regex(validCharacters, "Only letters, numbers, - and _ are allowed")
+    .regex(
+      noConsecutiveSpaces,
+      "Display name cannot contain consecutive spaces."
+    )
+    .regex(correctSpacing, "Cannot start or end with a space."),
+  bio: requiredString.max(255, "Bio must be at most 255 characters"),
+});
+
+export type editUserProfileType = z.infer<typeof editUserProfileSchema>;

@@ -1,7 +1,7 @@
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { UploadThingError } from "uploadthing/server";
+import { UploadThingError, UTApi } from "uploadthing/server";
 
 const f = createUploadthing();
 
@@ -15,6 +15,16 @@ export const ourFileRouter = {
       return { user };
     })
     .onUploadComplete(async ({ metadata, file }) => {
+      const prevAvatar = metadata.user.avatarUrl;
+
+      if (prevAvatar) {
+        const key = prevAvatar.split(
+          `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/`
+        )[1];
+
+        await new UTApi().deleteFiles(key);
+      }
+
       const newAvatarURL = file.url.replace(
         "/f/",
         `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/`
