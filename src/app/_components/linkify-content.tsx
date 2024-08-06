@@ -25,9 +25,12 @@ function LinkifyUrl({ children }: LinkifyProps) {
 function LinkifyUsername({ children }: LinkifyProps) {
   return (
     <LinkIt
-      regex={/(@[\w-]+)/g}
+      regex={/(@[a-zA-Z0-9_-]+)/}
       component={(match, key) => (
-        <UserLinkWithToolTip username={match.slice(1)} key={key}>
+        <UserLinkWithToolTip
+          username={match.slice(1)}
+          key={key + Math.random()}
+        >
           <Link
             key={key}
             href={`/users/${match.slice(1)}`}

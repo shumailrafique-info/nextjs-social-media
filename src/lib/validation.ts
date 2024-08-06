@@ -18,6 +18,7 @@ export const loginSchema = z.object({
 
 export const postSchema = z.object({
   content: requiredString,
+  mediaIds: z.array(z.string()).max(5, "Can't have more then 5 attachments"),
 });
 
 // Define individual validation checks

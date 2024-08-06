@@ -44,14 +44,32 @@ model Session {
 }
 
 model Post {
-  id      String @id @default(uuid())
-  content String
-  userId  String
-  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String  @id @default(uuid())
+  content     String
+  userId      String
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attachments Media[]
 
   createdAt DateTime @default(now())
 
   @@map("posts")
+}
+
+model Media {
+  id     String    @id @default(uuid())
+  postId String?
+  Post   Post?     @relation(fields: [postId], references: [id], onDelete: SetNull)
+  type   MediaType
+  url    String
+
+  createdAt DateTime @default(now())
+
+  @@map("postmedia")
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
 }
 
 model Follow {

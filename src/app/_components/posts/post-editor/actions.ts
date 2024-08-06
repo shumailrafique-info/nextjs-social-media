@@ -4,7 +4,6 @@ import prisma from "@/lib/prisma";
 import { getPostDataInclude } from "@/lib/types";
 import { postSchema } from "@/lib/validation";
 import * as z from "zod";
-
 export async function createPost(values: z.infer<typeof postSchema>) {
   const { user } = await validateRequest();
 
@@ -12,7 +11,7 @@ export async function createPost(values: z.infer<typeof postSchema>) {
     throw new Error("Unauthorized");
   }
 
-  const { content } = postSchema.parse(values);
+  const { content, mediaIds } = postSchema.parse(values);
 
   if (!content) {
     throw new Error("Invalid content");
@@ -22,8 +21,12 @@ export async function createPost(values: z.infer<typeof postSchema>) {
     data: {
       content,
       userId: user.id,
+      attachments: {
+        connect: mediaIds.map((id) => ({ id })),
+      },
     },
     include: getPostDataInclude(user.id),
   });
+
   return { success: true, newPost: newPost };
 }

@@ -15,12 +15,26 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { createPost } from "./actions";
 import "./styles.css";
+import useMediaUpload, { Attachement } from "./use-media-upload";
+import { useRef } from "react";
+import { ImageIcon, Loader2, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface Props {}
 
 const PostEditor = ({}: Props) => {
   //auth
   const { user } = useSession();
+
+  const {
+    startUpload,
+    attachements,
+    isUploading,
+    removeAttachment,
+    reset: resetMediaUploads,
+    uploadProgress,
+  } = useMediaUpload();
 
   //Editor Configrations
   const editor = useEditor({
@@ -53,7 +67,7 @@ const PostEditor = ({}: Props) => {
     mutationFn: createPost,
     onSuccess: async ({ newPost }) => {
       editor?.commands.clearContent();
-
+      resetMediaUploads();
       const queryFilter = {
         queryKey: ["posts"],
         predicate(query) {
@@ -111,7 +125,10 @@ const PostEditor = ({}: Props) => {
   //Submit Handler
   const handleSubmit = async () => {
     if (!input) return;
-    mutation.mutate({ content: input });
+    mutation.mutate({
+      content: input,
+      mediaIds: attachements.map((a) => a.mediaId).filter(Boolean) as string[],
+    });
   };
 
   return (
@@ -126,13 +143,29 @@ const PostEditor = ({}: Props) => {
           className="max-h-[20rem] w-full overflow-y-auto rounded-lg border bg-gray-100 px-4 py-2.5 text-sm outline-none ring-0 dark:bg-black"
         />
       </div>
-      <div className="flex w-full justify-end">
+      {!!attachements.length && (
+        <AttachemntsBox
+          attachments={attachements}
+          removeAttachment={removeAttachment}
+        />
+      )}
+      <div className="flex w-full items-center justify-end gap-2">
+        {isUploading && (
+          <div className="flex items-center justify-center gap-2">
+            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            <p className="text-sm">{uploadProgress ?? 0} %</p>
+          </div>
+        )}
+        <AddAttachmentsButton
+          onFilesSelected={startUpload}
+          disabled={isUploading || attachements.length >= 5}
+        />
         <Button
           type="button"
           loading={mutation.isPending}
           loadingText="Posting"
           className="dark:text-white"
-          disabled={!input || mutation.isPending}
+          disabled={!input || mutation.isPending || isUploading}
           onClick={handleSubmit}
         >
           Post
@@ -143,3 +176,117 @@ const PostEditor = ({}: Props) => {
 };
 
 export default PostEditor;
+
+interface AddAttachmentsButtonProps {
+  onFilesSelected: (files: File[]) => void;
+  disabled: boolean;
+}
+
+const AddAttachmentsButton = ({
+  onFilesSelected,
+  disabled,
+}: AddAttachmentsButtonProps) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  return (
+    <>
+      <Button
+        variant={"ghost"}
+        size={"icon"}
+        disabled={disabled}
+        className="text-primary hover:text-primary"
+        onClick={() => fileInputRef.current?.click()}
+      >
+        <ImageIcon size={20} />
+      </Button>
+      <input
+        type="file"
+        ref={fileInputRef}
+        accept="image/*, video/*"
+        multiple
+        className="sr-only hidden"
+        onChange={(e) => {
+          const files = Array.from(e.target.files || []);
+          if (files.length) {
+            onFilesSelected(files);
+          }
+          e.target.value = "";
+        }}
+      />
+    </>
+  );
+};
+
+interface AttachemntsBoxProps {
+  attachments: Attachement[];
+  removeAttachment: (filename: string) => void;
+}
+
+const AttachemntsBox = ({
+  attachments,
+  removeAttachment,
+}: AttachemntsBoxProps) => {
+  return (
+    <div
+      className={cn(
+        "flex flex-col gap-3",
+        attachments.length > 1 && "sm:grid sm:grid-cols-2"
+      )}
+    >
+      {attachments.map((attachment, i) => (
+        <AttachmentPreview
+          key={`${attachment.file.name} ${i}`}
+          attachment={attachment}
+          onRemoveClick={() => removeAttachment(attachment.file.name)}
+        />
+      ))}
+    </div>
+  );
+};
+
+interface AttachemntsPrevProps {
+  attachment: Attachement;
+  onRemoveClick: () => void;
+}
+
+const AttachmentPreview = ({
+  attachment: { file, isUploading, mediaId },
+  onRemoveClick,
+}: AttachemntsPrevProps) => {
+  const src = URL.createObjectURL(file);
+  return (
+    <div className={cn("relative mx-auto w-full", isUploading && "opacity-50")}>
+      {file.type.startsWith("image") ? (
+        <>
+          <Image
+            src={src}
+            alt={"Attachment preview"}
+            width={500}
+            height={500}
+            className="aspect-square w-full rounded-2xl object-cover"
+          />
+        </>
+      ) : (
+        <>
+          <video
+            controls
+            className="aspect-square h-full w-full rounded-2xl object-cover"
+          >
+            <source src={src} type={file.type} />
+          </video>
+        </>
+      )}
+      {!isUploading && (
+        <>
+          <button
+            onClick={onRemoveClick}
+            type="button"
+            className="absolute right-3 top-3 rounded-full bg-foreground p-1.5 text-background transition-colors hover:bg-foreground/60"
+          >
+            <X size={20} />
+          </button>
+        </>
+      )}
+    </div>
+  );
+};
