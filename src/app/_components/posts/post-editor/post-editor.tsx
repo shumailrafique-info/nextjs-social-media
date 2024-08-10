@@ -16,10 +16,11 @@ import StarterKit from "@tiptap/starter-kit";
 import { createPost } from "./actions";
 import "./styles.css";
 import useMediaUpload, { Attachement } from "./use-media-upload";
-import { useRef } from "react";
+import { ClipboardEvent, useRef } from "react";
 import { ImageIcon, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { useDropzone } from "@uploadthing/react";
 
 interface Props {}
 
@@ -35,6 +36,12 @@ const PostEditor = ({}: Props) => {
     reset: resetMediaUploads,
     uploadProgress,
   } = useMediaUpload();
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: startUpload,
+  });
+
+  const { onClick, ...rootProp } = getRootProps();
 
   //Editor Configrations
   const editor = useEditor({
@@ -131,6 +138,15 @@ const PostEditor = ({}: Props) => {
     });
   };
 
+  //Hnadle Paste of file
+  const onPaste = async (e: ClipboardEvent<HTMLElement>) => {
+    const files = Array.from(e.clipboardData.items)
+      .filter((file) => file.kind === "file")
+      .map((file) => file.getAsFile()) as File[];
+
+    startUpload(files);
+  };
+
   return (
     <div className="flex flex-col gap-5 rounded-2xl bg-card p-5 shadow-md dark:border">
       <div className="flex items-start justify-start gap-3">
@@ -138,10 +154,17 @@ const PostEditor = ({}: Props) => {
           <AvatarImage src={user.avatarUrl || ""} alt={user.displayName} />
           <AvatarFallback>SR</AvatarFallback>
         </Avatar>
-        <EditorContent
-          editor={editor}
-          className="max-h-[20rem] w-full overflow-y-auto rounded-lg border bg-gray-100 px-4 py-2.5 text-sm outline-none ring-0 dark:bg-black"
-        />
+        <div {...rootProp} className={`w-full`}>
+          <EditorContent
+            editor={editor}
+            onPaste={onPaste}
+            className={`max-h-[20rem] w-full overflow-y-auto rounded-lg border bg-gray-100 px-4 py-2.5 text-sm outline-none ring-0 dark:bg-black ${
+              isDragActive &&
+              "border !bg-gray-200 dark:!bg-[#181818] !outline-dashed"
+            }`}
+          />
+          <input {...getInputProps()} />
+        </div>
       </div>
       {!!attachements.length && (
         <AttachemntsBox
