@@ -22,10 +22,10 @@ const FollowButton = ({ userId, initialState }: Props) => {
   //query
   const { data } = useFollowerInfo(userId, initialState);
 
-  //mutation
-
+  //Query key
   const queryKey: QueryKey = ["follower-info", userId];
 
+  //mutation
   const { mutate, isPending } = useMutation({
     mutationFn: () =>
       data.isFollowedByUser

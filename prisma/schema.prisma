@@ -15,20 +15,22 @@ datasource db {
 }
 
 model User {
-  id           String    @id @default(uuid())
-  username     String    @unique
+  id           String     @id @default(uuid())
+  username     String     @unique
   displayName  String
-  email        String?   @unique
+  email        String?    @unique
   avatarUrl    String?
   passwordHash String?
-  googleId     String?   @unique
+  googleId     String?    @unique
   bio          String?
   sessions     Session[]
   posts        Post[]
+  bookmarks    Bookmark[]
 
   createdAt DateTime @default(now())
   followers Follow[] @relation("Followers") //users who are following this user
   following Follow[] @relation("Following") //users who are followed by this user
+  likes     Like[]
 
   @@map("users")
 }
@@ -44,11 +46,13 @@ model Session {
 }
 
 model Post {
-  id          String  @id @default(uuid())
+  id          String     @id @default(uuid())
   content     String
   userId      String
-  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   attachments Media[]
+  likes       Like[]
+  bookmarks   Bookmark[]
 
   createdAt DateTime @default(now())
 
@@ -81,4 +85,26 @@ model Follow {
 
   @@unique([followerId, followingId])
   @@map("follows")
+}
+
+model Like {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@map("likes")
+}
+
+model Bookmark {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@map("bookmarks")
 }

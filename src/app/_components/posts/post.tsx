@@ -12,6 +12,7 @@ import { Media } from "@prisma/client";
 import Image from "next/image";
 import ImagesModel from "../images-model";
 import { useState } from "react";
+import LikeButton from "@/app/(main)/_components/like-button";
 
 interface Props {
   post: postData;
@@ -63,10 +64,22 @@ const Post = ({ post }: Props) => {
       <LinkifyContent>
         <div className="whitespace-pre-wrap break-words">{post.content}</div>
       </LinkifyContent>
+
       {/* Attachments Box  */}
       {post?.attachments && post?.attachments?.length > 0 && (
         <AttachemntsBox attachments={post.attachments} />
       )}
+      <hr className="text-muted-foreground" />
+      {/* Like and Comment imformation  */}
+      <div className="flex items-center justify-between gap-2">
+        <LikeButton
+          initialState={{
+            likes: post._count.likes,
+            isLikedByUser: post.likes.some((like) => like.userId === user.id),
+          }}
+          postId={post.id}
+        />
+      </div>
     </article>
   );
 };
