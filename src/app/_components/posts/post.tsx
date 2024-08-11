@@ -43,6 +43,7 @@ const Post = ({ post }: Props) => {
             <Link
               href={`/posts/${post.id}`}
               className="block text-[13px] text-muted-foreground hover:underline"
+              suppressHydrationWarning
             >
               {formateRelativeDate(post.createdAt)}
             </Link>
