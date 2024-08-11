@@ -33,6 +33,12 @@ const BookMarkButton = ({ postId, initialState }: Props) => {
         ? kyInstance.delete(`/api/posts/${postId}/bookmarks`)
         : kyInstance.post(`/api/posts/${postId}/bookmarks`),
     onMutate: async () => {
+      toast({
+        variant: "success",
+        description: data.isBookmarkedByUser
+          ? "Post removed from bookmarks"
+          : "Post added to bookmarks",
+      });
       await queryClient.cancelQueries({ queryKey });
 
       const previousState =
@@ -66,15 +72,15 @@ const BookMarkButton = ({ postId, initialState }: Props) => {
       className={`flex items-center gap-1`}
       disabled={isPending}
     >
+      <span className="text-sm font-medium tabular-nums">
+        {data?.bookmarks}
+      </span>
       <Bookmark
         className={cn(
           "size-5",
           data.isBookmarkedByUser && "fill-primary text-primary"
         )}
       />
-      <span className="text-sm font-medium tabular-nums">
-        {data?.bookmarks}
-      </span>
     </button>
   );
 };
