@@ -16,7 +16,7 @@ const UserProfilePage = async ({}) => {
   return (
     <main className="flex w-full min-w-0 gap-5">
       <div className="w-full min-w-0 space-y-4">
-        <div className="rounded-xl bg-card p-5 text-center shadow-md dark:border">
+        <div className="rounded-xl bg-card px-5 py-4 text-center shadow-md dark:border">
           <h2 className="text-2xl font-semibold">Bookmarks</h2>
         </div>
         <BookmarkedPosts />

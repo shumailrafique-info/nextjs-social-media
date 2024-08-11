@@ -64,7 +64,7 @@ const UserProfilePage = async ({ params: { username } }: Props) => {
     <main className="flex w-full min-w-0 gap-5">
       <div className="w-full min-w-0 space-y-4">
         <UserProfile user={user} loggedInUserId={loggedInUser.id} />
-        <div className="rounded-xl bg-card p-5 text-center shadow-md dark:border">
+        <div className="rounded-xl bg-card px-5 py-4 text-center shadow-md dark:border">
           <h2 className="text-2xl font-semibold">
             {user.displayName}&apos;s posts
           </h2>
