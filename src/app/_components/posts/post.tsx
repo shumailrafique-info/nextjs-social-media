@@ -10,6 +10,8 @@ import LinkifyContent from "../linkify-content";
 import UserTooltip from "../user-tooltip";
 import { Media } from "@prisma/client";
 import Image from "next/image";
+import ImagesModel from "../images-model";
+import { useState } from "react";
 
 interface Props {
   post: postData;
@@ -76,28 +78,53 @@ interface AttachemntsBoxProps {
 }
 
 const AttachemntsBox = ({ attachments }: AttachemntsBoxProps) => {
+  const [url, setUrl] = useState(
+    (attachments?.length > 0 &&
+      attachments.filter((attachment) => attachment.type === "IMAGE").length >
+        0 &&
+      attachments.filter((attachment) => attachment.type === "IMAGE")[0].url) ||
+      ""
+  );
+  const [open, setOpen] = useState(false);
   return (
-    <div
-      className={cn(
-        "flex flex-col gap-3",
-        attachments.length > 1 && "sm:grid sm:grid-cols-2"
-      )}
-    >
-      {attachments.map((attachment, i) => (
-        <AttachmentPreview
-          key={`${attachment.id} ${i}`}
-          attachment={attachment}
+    <>
+      <div
+        className={cn(
+          "flex flex-col gap-3",
+          attachments.length > 1 && "sm:grid sm:grid-cols-2"
+        )}
+      >
+        {attachments.map((attachment, i) => (
+          <AttachmentPreview
+            key={`${attachment.id} ${i}`}
+            attachment={attachment}
+            onClick={(url) => {
+              setOpen(true);
+              setUrl(url);
+            }}
+          />
+        ))}
+      </div>
+      {open && (
+        <ImagesModel
+          initialImage={url}
+          model={open}
+          setModel={setOpen}
+          modelImages={attachments
+            .filter((attachment) => attachment.type === "IMAGE")
+            .map((attachment) => attachment.url)}
         />
-      ))}
-    </div>
+      )}
+    </>
   );
 };
 
 interface AttachemntsPrevProps {
   attachment: Media;
+  onClick: (url: string) => void;
 }
 
-const AttachmentPreview = ({ attachment }: AttachemntsPrevProps) => {
+const AttachmentPreview = ({ attachment, onClick }: AttachemntsPrevProps) => {
   return (
     <>
       {attachment.type === "IMAGE" ? (
@@ -105,9 +132,10 @@ const AttachmentPreview = ({ attachment }: AttachemntsPrevProps) => {
           <Image
             src={attachment.url}
             alt={"Attachment preview"}
+            onClick={() => onClick(attachment.url)}
             width={500}
             height={500}
-            className="aspect-square w-full rounded-2xl border-[3px] object-cover"
+            className="aspect-square w-full cursor-pointer rounded-2xl border-[3px] object-cover"
           />
         </>
       ) : (

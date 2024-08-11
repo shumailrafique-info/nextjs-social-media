@@ -116,7 +116,7 @@ const UserInfoSideBar = async ({ user }: UserInfoSideBarProps) => {
         </Link>
       </UserTooltip>
       <LinkifyContent>
-        <div className="line-clamp-1 whitespace-pre-line break-words text-muted-foreground">
+        <div className="whitespace-pre-line break-words text-muted-foreground">
           {user.bio}
         </div>
       </LinkifyContent>

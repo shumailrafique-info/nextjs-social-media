@@ -155,7 +155,7 @@ async function UserProfile({ user, loggedInUserId }: userProfileProps) {
         <>
           <hr />
           <LinkifyContent>
-            <div className="line-clamp-1 whitespace-pre-line break-words text-muted-foreground">
+            <div className="whitespace-pre-line break-words text-muted-foreground">
               {user.bio}
             </div>
           </LinkifyContent>
