@@ -20,7 +20,12 @@ Required env files to run this project on your local:
 
 ```bash
 # postgresql database url
-DATABASE_URL="postgresql://postgres:2002113@localhost:5432/social"
+DATABASE_URL="postgresql://postgres:2002113@localhost:5432/social-neon-database"
+# uploadthing
+UPLOADTHING_SECRET="slkdjlkasjdlkasjdlkasjdlkasjdlkasjd-random"
+NEXT_PUBLIC_UPLOADTHING_APP_ID="sadjasjdlkasjdlkaslkdjalskdjlaskjd-random"
+# cron-job secret
+CRON_SECRET="cron-secret-random"
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

@@ -176,7 +176,7 @@ const AttachmentPreview = ({ attachment, onClick }: AttachemntsPrevProps) => {
             onClick={() => onClick(attachment.url)}
             width={500}
             height={500}
-            className="aspect-square w-full cursor-pointer rounded-2xl border-[3px] object-cover"
+            className="aspect-square w-full cursor-pointer rounded-2xl border-[3px] object-cover hover:ring-4"
           />
         </>
       ) : (

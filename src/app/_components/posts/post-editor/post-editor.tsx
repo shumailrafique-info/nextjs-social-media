@@ -154,7 +154,8 @@ const PostEditor = ({}: Props) => {
           <AvatarImage src={user.avatarUrl || ""} alt={user.displayName} />
           <AvatarFallback>SR</AvatarFallback>
         </Avatar>
-        <div {...rootProp} className={`w-full`}>
+        {/* <div {...rootProp} className={`w-full`}> */}
+        <div className={`w-full`}>
           <EditorContent
             editor={editor}
             onPaste={onPaste}
@@ -163,7 +164,7 @@ const PostEditor = ({}: Props) => {
               "border !bg-gray-200 dark:!bg-[#181818] !outline-dashed"
             }`}
           />
-          <input {...getInputProps()} />
+          {/* <input {...getInputProps()} /> */}
         </div>
       </div>
       {!!attachements.length && (
@@ -216,7 +217,7 @@ const AddAttachmentsButton = ({
       <Button
         variant={"ghost"}
         size={"icon"}
-        disabled={disabled}
+        // disabled={disabled}
         className="text-primary hover:text-primary"
         onClick={() => fileInputRef.current?.click()}
       >

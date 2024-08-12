@@ -78,7 +78,8 @@ const CreateComment = ({ post }: Props) => {
   });
 
   //Submit Handler
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!input) return;
     mutation.mutate({
       content: input,
@@ -92,25 +93,28 @@ const CreateComment = ({ post }: Props) => {
         <AvatarImage src={user.avatarUrl || ""} alt={user.displayName} />
         <AvatarFallback>SR</AvatarFallback>
       </Avatar> */}
-      <div className={`flex w-full items-center gap-2`}>
+      <form
+        onSubmit={handleSubmit}
+        className={`flex w-full items-center gap-2`}
+      >
         <Input
           onChange={(e) => setInput(e.target.value)}
           placeholder="Write a comment..."
           value={input}
+          autoFocus
           className={`max-h-[42px] w-full overflow-y-auto rounded-lg border bg-gray-100 px-3 py-2.5 text-sm outline-none ring-0 dark:bg-black`}
         />
         <Button
-          type="button"
+          type="submit"
           variant={"ghost"}
           loading={mutation.isPending}
           size={"icon"}
           className="cursor-pointer hover:text-primary dark:text-white dark:hover:text-primary"
           disabled={!input || mutation.isPending}
-          onClick={handleSubmit}
         >
           <SendHorizonal />
         </Button>
-      </div>
+      </form>
     </div>
   );
 };

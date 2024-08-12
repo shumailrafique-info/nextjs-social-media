@@ -15,7 +15,7 @@ interface Props {
 const Comment = ({ comment }: Props) => {
   const { user } = useSession();
   return (
-    <div className="group flex items-start gap-2 border-b-[1.5px] border-gray-200 pb-2">
+    <div className="group flex items-start gap-2 border-b-[1.5px] border-gray-200 pb-2 dark:border-gray-100/30">
       {/* Pic  */}
       <Avatar className="max-h-[38px] min-h-[38px] min-w-[38px] max-w-[38px]">
         <AvatarImage
@@ -26,7 +26,7 @@ const Comment = ({ comment }: Props) => {
       </Avatar>
       {/* Content */}
       <div className="w-full">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center sm:gap-2">
           <Link
             href={`/users/${comment.user.username}`}
             className="block text-[14px] font-medium leading-[1.3] hover:underline"
@@ -34,7 +34,7 @@ const Comment = ({ comment }: Props) => {
             {comment.user.displayName}
           </Link>
           <p
-            className="text-[12px] text-muted-foreground"
+            className="hidden text-[12px] text-muted-foreground sm:flex"
             suppressHydrationWarning
           >
             {formateRelativeDate(comment.createdAt)}
