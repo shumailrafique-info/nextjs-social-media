@@ -158,7 +158,7 @@ const PostEditor = ({}: Props) => {
         <div className={`w-full`}>
           <EditorContent
             editor={editor}
-            onPaste={onPaste}
+            // onPaste={onPaste}
             className={`max-h-[20rem] w-full overflow-y-auto rounded-lg border bg-gray-100 px-4 py-2.5 text-sm outline-none ring-0 dark:bg-black ${
               isDragActive &&
               "border !bg-gray-200 dark:!bg-[#181818] !outline-dashed"
