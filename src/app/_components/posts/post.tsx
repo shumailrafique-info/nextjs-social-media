@@ -14,13 +14,16 @@ import ImagesModel from "../images-model";
 import { useState } from "react";
 import LikeButton from "@/app/(main)/_components/like-button";
 import BookMarkButton from "@/app/(main)/_components/bookmark-button";
-
+import Comments from "../comments/comments";
+import { MessageSquare } from "lucide-react";
+import CreateComment from "@/app/_components/comments/create-comment";
 interface Props {
   post: postData;
 }
 
 const Post = ({ post }: Props) => {
   const { user } = useSession();
+  const [showComments, setShowComments] = useState(false);
   return (
     <article className="group/post space-y-3 rounded-2xl bg-card p-4 shadow-md dark:border sm:p-5">
       <div className="flex items-center justify-between gap-3">
@@ -73,15 +76,21 @@ const Post = ({ post }: Props) => {
 
       <hr className="text-muted-foreground" />
 
-      {/* Like and Comment imformation  */}
+      {/* Like and Comments and bookmarks imformation  */}
       <div className="flex items-center justify-between gap-2">
-        <LikeButton
-          initialState={{
-            likes: post._count.likes,
-            isLikedByUser: post.likes.some((like) => like.userId === user.id),
-          }}
-          postId={post.id}
-        />
+        <div className="flex items-center gap-4">
+          <LikeButton
+            initialState={{
+              likes: post._count.likes,
+              isLikedByUser: post.likes.some((like) => like.userId === user.id),
+            }}
+            postId={post.id}
+          />
+          <CommentButton
+            post={post}
+            onClick={() => setShowComments(!showComments)}
+          />
+        </div>
         <BookMarkButton
           initialState={{
             bookmarks: post._count.bookmarks,
@@ -92,6 +101,13 @@ const Post = ({ post }: Props) => {
           postId={post.id}
         />
       </div>
+      {/* Comments section  */}
+      {showComments && (
+        <div className="mt-2 w-full space-y-5">
+          <CreateComment post={post} />
+          <Comments post={post} />
+        </div>
+      )}
     </article>
   );
 };
@@ -181,5 +197,22 @@ const AttachmentPreview = ({ attachment, onClick }: AttachemntsPrevProps) => {
         </>
       )}
     </>
+  );
+};
+
+interface CommentButtonProps {
+  post: postData;
+  onClick: () => void;
+}
+
+const CommentButton = ({ onClick, post }: CommentButtonProps) => {
+  return (
+    <button onClick={onClick} className={`flex items-center gap-2`}>
+      <MessageSquare className={cn("size-5")} />
+      <span className="text-sm font-medium tabular-nums">
+        {post?._count?.comments}{" "}
+        <span className="hidden sm:inline">comments</span>
+      </span>
+    </button>
   );
 };

@@ -38,3 +38,7 @@ export const editUserProfileSchema = z.object({
 });
 
 export type editUserProfileType = z.infer<typeof editUserProfileSchema>;
+
+export const commentSchema = z.object({
+  content: requiredString,
+});
