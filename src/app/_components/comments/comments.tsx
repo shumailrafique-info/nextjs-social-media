@@ -4,6 +4,8 @@ import { commentPage, postData } from "@/lib/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import Comment from "./comment";
+import { Button } from "@/components/ui/button";
+import CommentSkeleton from "../comment-skeleton";
 
 interface Props {
   post: postData;
@@ -49,10 +51,13 @@ const Comments = ({ post }: Props) => {
     // staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  const comments = data?.pages.flatMap((page) => page.comments) || [];
-
-  if (status === "pending" && !isFetchingNextPage)
-    return <Loader2 className="mx-auto animate-spin" />;
+  // Reverse the order of pages and flatten the comments
+  const comments =
+    data?.pages
+      .slice() // Create a shallow copy of pages array
+      .reverse() // Reverse the order of pages
+      .flatMap((page) => page.comments) || [];
+  if (status === "pending" && !isFetchingNextPage) return <CommentSkeleton />;
 
   if (status === "success" && !comments.length && !hasNextPage)
     return (
@@ -69,22 +74,32 @@ const Comments = ({ post }: Props) => {
       </p>
     );
   }
-  // fetch prev Comments
-  // () => hasNextPage && !isFetching && fetchNextPage()
   return (
-    <div className="space-y-2">
+    <div className="w-full space-y-2">
       {/* Comments  */}
+      {/* {status === "success" && !hasNextPage && (
+        <p className="text-center text-sm text-muted-foreground">
+          No more comments.
+        </p>
+      )} */}
+
+      {isFetchingNextPage && <CommentSkeleton />}
+      {hasNextPage && (
+        <div className="flex items-center justify-center">
+          <Button
+            className=""
+            onClick={() => hasNextPage && !isFetching && fetchNextPage()}
+            variant={"link"}
+          >
+            Load Previous Comments
+          </Button>
+        </div>
+      )}
       <div className="space-y-3">
         {comments?.map((comment) => (
           <Comment key={comment.id} comment={comment} />
         ))}
       </div>
-      {isFetchingNextPage && <Loader2 className="mx-auto animate-spin" />}
-      {status === "success" && !hasNextPage && (
-        <p className="text-center text-sm text-muted-foreground">
-          No more comments.
-        </p>
-      )}
     </div>
   );
 };

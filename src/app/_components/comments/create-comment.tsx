@@ -1,20 +1,17 @@
 "use client";
 
-import { useSession } from "@/app/(main)/_providers/session-provider";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { commentPage, postData } from "@/lib/types";
 import {
   InfiniteData,
-  QueryFilters,
+  QueryKey,
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import Placeholder from "@tiptap/extension-placeholder";
-import { EditorContent, useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
 import { SendHorizonal } from "lucide-react";
+import { useState } from "react";
 import { createComment } from "./actions";
 
 interface Props {
@@ -22,31 +19,9 @@ interface Props {
 }
 
 const CreateComment = ({ post }: Props) => {
-  //auth
-  const { user } = useSession();
-
+  const [input, setInput] = useState("");
   //toast trigger
   const { toast } = useToast();
-
-  //Editor Configrations
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        bold: false,
-        italic: false,
-      }),
-      Placeholder.configure({
-        placeholder: "Write a comment...",
-      }),
-    ],
-    content: "",
-  });
-
-  //Input
-  const input =
-    editor?.getText({
-      blockSeparator: "\n",
-    }) || "";
 
   //gettting query client
   const queryClient = useQueryClient();
@@ -55,18 +30,14 @@ const CreateComment = ({ post }: Props) => {
   const mutation = useMutation({
     mutationFn: createComment,
     onSuccess: async ({ data }) => {
-      editor?.commands.clearContent();
-      const queryFilter = {
-        queryKey: ["comments"],
-        predicate(query) {
-          return query.queryKey.includes("comments");
-        },
-      } satisfies QueryFilters;
+      setInput("");
 
-      await queryClient.cancelQueries(queryFilter);
+      const queryKey: QueryKey = ["comments", post.id];
 
-      queryClient.setQueriesData<InfiniteData<commentPage, string | null>>(
-        queryFilter,
+      await queryClient.cancelQueries({ queryKey });
+
+      queryClient.setQueryData<InfiniteData<commentPage, string | null>>(
+        queryKey,
         (oldData) => {
           const firstPage = oldData?.pages[0];
 
@@ -75,7 +46,7 @@ const CreateComment = ({ post }: Props) => {
               pageParams: oldData.pageParams,
               pages: [
                 {
-                  comments: [data.comment, ...firstPage.comments],
+                  comments: [...firstPage.comments, data.comment],
                   previousCursor: firstPage.previousCursor,
                 },
                 ...oldData.pages.slice(1),
@@ -86,22 +57,22 @@ const CreateComment = ({ post }: Props) => {
       );
 
       queryClient.invalidateQueries({
-        queryKey: queryFilter.queryKey,
+        queryKey: queryKey,
         predicate(query) {
-          return queryFilter.predicate(query) && !query.state.data;
+          return !query.state.data;
         },
       });
 
       toast({
         variant: "default",
-        description: "Comment Added successfully!",
+        description: "Comment Added!",
       });
     },
     onError: (err) => {
       console.log(err);
       toast({
         variant: "destructive",
-        description: "Failed to post comment. Please try again.",
+        description: "Failed to submit comment. Please try again.",
       });
     },
   });
@@ -122,8 +93,10 @@ const CreateComment = ({ post }: Props) => {
         <AvatarFallback>SR</AvatarFallback>
       </Avatar> */}
       <div className={`flex w-full items-center gap-2`}>
-        <EditorContent
-          editor={editor}
+        <Input
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Write a comment..."
+          value={input}
           className={`max-h-[42px] w-full overflow-y-auto rounded-lg border bg-gray-100 px-3 py-2.5 text-sm outline-none ring-0 dark:bg-black`}
         />
         <Button
@@ -131,7 +104,7 @@ const CreateComment = ({ post }: Props) => {
           variant={"ghost"}
           loading={mutation.isPending}
           size={"icon"}
-          className="hover:text-primary dark:text-white dark:hover:text-primary"
+          className="cursor-pointer hover:text-primary dark:text-white dark:hover:text-primary"
           disabled={!input || mutation.isPending}
           onClick={handleSubmit}
         >

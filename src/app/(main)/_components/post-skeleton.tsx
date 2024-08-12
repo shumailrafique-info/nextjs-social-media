@@ -4,8 +4,8 @@ interface Props {}
 
 const PostSkeleton = ({}: Props) => {
   return (
-    <>
-      <Skeleton className="space-y-3 bg-white p-5 dark:border dark:bg-transparent">
+    <div className="w-full space-y-3">
+      <Skeleton className="space-y-3 rounded-2xl bg-white p-5 shadow-md dark:border dark:bg-transparent">
         <Skeleton className="flex items-center space-x-3 bg-transparent">
           <Skeleton className="h-10 w-10 rounded-full" />
           <div className="space-y-2">
@@ -15,7 +15,7 @@ const PostSkeleton = ({}: Props) => {
         </Skeleton>
         <Skeleton className="h-12 w-full rounded-xl" />
       </Skeleton>
-      <Skeleton className="space-y-3 bg-white p-5 dark:border dark:bg-transparent">
+      <Skeleton className="space-y-3 rounded-2xl bg-white p-5 shadow-md dark:border dark:bg-transparent">
         <Skeleton className="flex items-center space-x-3 bg-transparent">
           <Skeleton className="h-10 w-10 rounded-full" />
           <div className="space-y-2">
@@ -25,7 +25,7 @@ const PostSkeleton = ({}: Props) => {
         </Skeleton>
         <Skeleton className="h-12 w-full rounded-xl" />
       </Skeleton>
-      <Skeleton className="space-y-3 bg-white p-5 dark:border dark:bg-transparent">
+      <Skeleton className="space-y-3 rounded-2xl bg-white p-5 shadow-md dark:border dark:bg-transparent">
         <Skeleton className="flex items-center space-x-3 bg-transparent">
           <Skeleton className="h-10 w-10 rounded-full" />
           <div className="space-y-2">
@@ -35,7 +35,7 @@ const PostSkeleton = ({}: Props) => {
         </Skeleton>
         <Skeleton className="h-12 w-full rounded-xl" />
       </Skeleton>
-    </>
+    </div>
   );
 };
 

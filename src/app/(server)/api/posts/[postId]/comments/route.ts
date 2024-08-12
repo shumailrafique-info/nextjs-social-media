@@ -34,7 +34,7 @@ export async function GET(
     const previousCursor = comments.length > limit ? comments[0].id : null;
 
     const data: commentPage = {
-      comments: comments.length > limit ? comments.slice(1, limit) : comments,
+      comments: comments.length > limit ? comments.slice(1) : comments,
       previousCursor,
     };
 
