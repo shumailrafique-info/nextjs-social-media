@@ -11,7 +11,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { deleteComment } from "./actions";
 import { commentPage } from "@/lib/types";
 
-const useDeleteCommentMutation = ({ postId }: { postId: string }) => {
+const useDeleteCommentMutation = () => {
   //toast trigger
   const { toast } = useToast();
 
@@ -29,7 +29,7 @@ const useDeleteCommentMutation = ({ postId }: { postId: string }) => {
     mutationFn: deleteComment,
     onSuccess: async ({ data }) => {
       const queryFilter: QueryFilters = {
-        queryKey: ["comments", postId],
+        queryKey: ["comments", data.comment.postId],
       };
 
       await queryClient.cancelQueries(queryFilter);

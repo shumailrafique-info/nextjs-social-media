@@ -42,7 +42,6 @@ const MoreOptionsComment = ({ postId, commentId }: Props) => {
       <DeleteCommentDialog
         open={openDeleteDianlog}
         onClose={() => setOpenDeleteDianlog(false)}
-        postId={postId}
         commentId={commentId}
       />
     </>

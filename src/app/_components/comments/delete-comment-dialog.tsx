@@ -11,18 +11,16 @@ import { Button } from "@/components/ui/button";
 
 interface DeleteCommentDialogProps {
   commentId: string;
-  postId: string;
   open: boolean;
   onClose: () => void;
 }
 
 export default function DeleteCommentDialog({
   commentId,
-  postId,
   open,
   onClose,
 }: DeleteCommentDialogProps) {
-  const mutation = useDeleteCommentMutation({ postId });
+  const mutation = useDeleteCommentMutation();
 
   function handleOpenChange(open: boolean) {
     if (!open || !mutation.isPending) {
@@ -34,7 +32,7 @@ export default function DeleteCommentDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete post?</DialogTitle>
+          <DialogTitle>Delete comment?</DialogTitle>
           <DialogDescription>
             Are you sure you want to delete this comment? This action cannot be
             undone.
