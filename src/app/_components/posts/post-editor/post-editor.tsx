@@ -3,7 +3,13 @@ import { PostPage } from "@/app/(main)/_components/for-you-posts";
 import { useSession } from "@/app/(main)/_providers/session-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 import {
   InfiniteData,
   QueryFilters,
@@ -13,20 +19,21 @@ import {
 import Placeholder from "@tiptap/extension-placeholder";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { useDropzone } from "@uploadthing/react";
+import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
+import { ImageIcon, Loader2, SmilePlus, X } from "lucide-react";
+import Image from "next/image";
+import { ClipboardEvent, memo, useCallback, useRef, useState } from "react";
 import { createPost } from "./actions";
 import "./styles.css";
 import useMediaUpload, { Attachement } from "./use-media-upload";
-import { ClipboardEvent, useRef } from "react";
-import { ImageIcon, Loader2, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import Image from "next/image";
-import { useDropzone } from "@uploadthing/react";
 
 interface Props {}
 
 const PostEditor = ({}: Props) => {
   //auth
   const { user } = useSession();
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const {
     startUpload,
@@ -58,7 +65,7 @@ const PostEditor = ({}: Props) => {
   });
 
   //Input
-  const input =
+  let input =
     editor?.getText({
       blockSeparator: "\n",
     }) || "";
@@ -138,13 +145,23 @@ const PostEditor = ({}: Props) => {
     });
   };
 
-  //Hnadle Paste of file
-  const onPaste = async (e: ClipboardEvent<HTMLElement>) => {
-    const files = Array.from(e.clipboardData.items)
-      .filter((file) => file.kind === "file")
-      .map((file) => file.getAsFile()) as File[];
+  // Memoizing the onPaste function
+  const onPaste = useCallback(
+    async (e: ClipboardEvent<HTMLElement>) => {
+      const files = Array.from(e.clipboardData.items)
+        .filter((file) => file.kind === "file")
+        .map((file) => file.getAsFile()) as File[];
+      if (files.length > 0) {
+        startUpload(files);
+      }
+    },
+    [startUpload]
+  );
 
-    startUpload(files);
+  const onEmojiClick = (emojiObject: EmojiClickData) => {
+    if (editor) {
+      editor.chain().focus().insertContent(emojiObject.emoji).run();
+    }
   };
 
   return (
@@ -154,17 +171,16 @@ const PostEditor = ({}: Props) => {
           <AvatarImage src={user.avatarUrl || ""} alt={user.displayName} />
           <AvatarFallback>SR</AvatarFallback>
         </Avatar>
-        {/* <div {...rootProp} className={`w-full`}> */}
-        <div className={`w-full`}>
+        <div {...rootProp} className={`w-full`}>
           <EditorContent
             editor={editor}
-            // onPaste={onPaste}
+            onPaste={onPaste}
             className={`max-h-[20rem] w-full overflow-y-auto rounded-lg border bg-gray-100 px-4 py-2.5 text-sm outline-none ring-0 dark:bg-black ${
               isDragActive &&
               "border !bg-gray-200 dark:!bg-[#181818] !outline-dashed"
             }`}
           />
-          {/* <input {...getInputProps()} /> */}
+          <input {...getInputProps()} />
         </div>
       </div>
       {!!attachements.length && (
@@ -180,10 +196,32 @@ const PostEditor = ({}: Props) => {
             <p className="text-sm">{uploadProgress ?? 0} %</p>
           </div>
         )}
-        <AddAttachmentsButton
-          onFilesSelected={startUpload}
-          disabled={isUploading || attachements.length >= 5}
-        />
+        <div className="flex items-center">
+          <AddAttachmentsButton
+            onFilesSelected={startUpload}
+            disabled={isUploading || attachements.length >= 5}
+          />
+          <DropdownMenu
+            open={showEmojiPicker}
+            onOpenChange={setShowEmojiPicker}
+          >
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant={"ghost"}
+                size={"icon"}
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                className="relative cursor-pointer hover:text-primary dark:text-white dark:hover:text-primary"
+                disabled={mutation.isPending}
+              >
+                <SmilePlus className="text-primary" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-fit !p-0 shadow-lg" align="end">
+              <EmojiPicker onEmojiClick={onEmojiClick} />
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         <Button
           type="button"
           loading={mutation.isPending}
@@ -221,7 +259,7 @@ const AddAttachmentsButton = ({
         className="text-primary hover:text-primary"
         onClick={() => fileInputRef.current?.click()}
       >
-        <ImageIcon size={20} />
+        <ImageIcon />
       </Button>
       <input
         type="file"
@@ -246,42 +284,45 @@ interface AttachemntsBoxProps {
   removeAttachment: (filename: string) => void;
 }
 
-const AttachemntsBox = ({
-  attachments,
-  removeAttachment,
-}: AttachemntsBoxProps) => {
-  return (
-    <div
-      className={cn(
-        "flex flex-col gap-3",
-        attachments.length > 1 && "sm:grid sm:grid-cols-2"
-      )}
-    >
-      {attachments.map((attachment, i) => (
-        <AttachmentPreview
-          key={`${attachment.file.name} ${i}`}
-          attachment={attachment}
-          onRemoveClick={() => removeAttachment(attachment.file.name)}
-        />
-      ))}
-    </div>
-  );
-};
+const AttachemntsBox = memo(
+  ({ attachments, removeAttachment }: AttachemntsBoxProps) => {
+    return (
+      <div
+        className={cn(
+          "flex flex-col gap-3",
+          attachments.length > 1 && "sm:grid sm:grid-cols-2"
+        )}
+      >
+        {attachments.map((attachment) => (
+          <AttachmentPreview
+            key={attachment.file.name}
+            attachment={attachment}
+            onRemoveClick={() => removeAttachment(attachment.file.name)}
+          />
+        ))}
+      </div>
+    );
+  }
+);
+
+AttachemntsBox.displayName = "AttachemntsBox";
 
 interface AttachemntsPrevProps {
   attachment: Attachement;
   onRemoveClick: () => void;
 }
-
-const AttachmentPreview = ({
-  attachment: { file, isUploading, mediaId },
-  onRemoveClick,
-}: AttachemntsPrevProps) => {
-  const src = URL.createObjectURL(file);
-  return (
-    <div className={cn("relative mx-auto w-full", isUploading && "opacity-50")}>
-      {file.type.startsWith("image") ? (
-        <>
+// AttachmentPreview.tsx
+const AttachmentPreview = memo(
+  ({
+    attachment: { file, isUploading, mediaId },
+    onRemoveClick,
+  }: AttachemntsPrevProps) => {
+    const src = URL.createObjectURL(file);
+    return (
+      <div
+        className={cn("relative mx-auto w-full", isUploading && "opacity-50")}
+      >
+        {file.type.startsWith("image") ? (
           <Image
             src={src}
             alt={"Attachment preview"}
@@ -289,19 +330,15 @@ const AttachmentPreview = ({
             height={500}
             className="aspect-square w-full rounded-2xl object-cover"
           />
-        </>
-      ) : (
-        <>
+        ) : (
           <video
             controls
             className="aspect-square h-full w-full rounded-2xl object-cover"
           >
             <source src={src} type={file.type} />
           </video>
-        </>
-      )}
-      {!isUploading && (
-        <>
+        )}
+        {!isUploading && (
           <button
             onClick={onRemoveClick}
             type="button"
@@ -309,8 +346,10 @@ const AttachmentPreview = ({
           >
             <X size={20} />
           </button>
-        </>
-      )}
-    </div>
-  );
-};
+        )}
+      </div>
+    );
+  }
+);
+
+AttachmentPreview.displayName = "AttachmentPreview";

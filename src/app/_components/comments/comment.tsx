@@ -7,6 +7,7 @@ import LinkifyContent from "../linkify-content";
 import { EllipsisIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/app/(main)/_providers/session-provider";
+import UserTooltip from "../user-tooltip";
 
 interface Props {
   comment: commentData;
@@ -17,13 +18,15 @@ const Comment = ({ comment }: Props) => {
   return (
     <div className="group flex items-start gap-2 border-b-[1.5px] border-gray-200 pb-2 dark:border-gray-100/30">
       {/* Pic  */}
-      <Avatar className="max-h-[38px] min-h-[38px] min-w-[38px] max-w-[38px]">
-        <AvatarImage
-          src={comment.user.avatarUrl || ""}
-          alt={comment.user.displayName}
-        />
-        <AvatarFallback>SR</AvatarFallback>
-      </Avatar>
+      <UserTooltip user={comment.user}>
+        <Avatar className="max-h-[38px] min-h-[38px] min-w-[38px] max-w-[38px] cursor-pointer">
+          <AvatarImage
+            src={comment.user.avatarUrl || ""}
+            alt={comment.user.displayName}
+          />
+          <AvatarFallback>SR</AvatarFallback>
+        </Avatar>
+      </UserTooltip>
       {/* Content */}
       <div className="w-full">
         <div className="flex items-center sm:gap-2">

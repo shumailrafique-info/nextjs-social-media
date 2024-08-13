@@ -1,6 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { commentPage, postData } from "@/lib/types";
@@ -10,7 +16,8 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { SendHorizonal } from "lucide-react";
+import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
+import { SendHorizonal, SmilePlus } from "lucide-react";
 import { useState } from "react";
 import { createComment } from "./actions";
 
@@ -20,13 +27,12 @@ interface Props {
 
 const CreateComment = ({ post }: Props) => {
   const [input, setInput] = useState("");
-  //toast trigger
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
   const { toast } = useToast();
 
-  //gettting query client
   const queryClient = useQueryClient();
 
-  //Mutation for Invalidating and creating new cache data with new comment
   const mutation = useMutation({
     mutationFn: createComment,
     onSuccess: async ({ data }) => {
@@ -77,7 +83,6 @@ const CreateComment = ({ post }: Props) => {
     },
   });
 
-  //Submit Handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input) return;
@@ -87,12 +92,12 @@ const CreateComment = ({ post }: Props) => {
     });
   };
 
+  const onEmojiClick = (emojiObject: EmojiClickData) => {
+    setInput((prevValue) => prevValue + emojiObject.emoji);
+  };
+
   return (
     <div className="flex items-start justify-start gap-2">
-      {/* <Avatar className="max-h-[35px] min-h-[35px] min-w-[35px] max-w-[35px]">
-        <AvatarImage src={user.avatarUrl || ""} alt={user.displayName} />
-        <AvatarFallback>SR</AvatarFallback>
-      </Avatar> */}
       <form
         onSubmit={handleSubmit}
         className={`flex w-full items-center gap-2`}
@@ -102,18 +107,40 @@ const CreateComment = ({ post }: Props) => {
           placeholder="Write a comment..."
           value={input}
           autoFocus
-          className={`max-h-[42px] w-full overflow-y-auto rounded-lg border bg-gray-100 px-3 py-2.5 text-sm outline-none ring-0 dark:bg-black`}
+          className={`max-h-[42px] w-full overflow-y-auto rounded-lg border bg-gray-100 px-3 py-3 text-sm outline-none ring-0 dark:bg-black`}
         />
-        <Button
-          type="submit"
-          variant={"ghost"}
-          loading={mutation.isPending}
-          size={"icon"}
-          className="cursor-pointer hover:text-primary dark:text-white dark:hover:text-primary"
-          disabled={!input || mutation.isPending}
-        >
-          <SendHorizonal />
-        </Button>
+        <div className="relative flex items-center gap-0">
+          <DropdownMenu
+            open={showEmojiPicker}
+            onOpenChange={setShowEmojiPicker}
+          >
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant={"ghost"}
+                size={"icon"}
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                className="relative cursor-pointer hover:text-primary dark:text-white dark:hover:text-primary"
+                disabled={mutation.isPending}
+              >
+                <SmilePlus />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-fit !p-0 shadow-lg" align="end">
+              <EmojiPicker onEmojiClick={onEmojiClick} />
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button
+            type="submit"
+            variant={"ghost"}
+            loading={mutation.isPending}
+            size={"icon"}
+            className="cursor-pointer hover:text-primary dark:text-white dark:hover:text-primary"
+            disabled={!input.trim() || mutation.isPending}
+          >
+            <SendHorizonal />
+          </Button>
+        </div>
       </form>
     </div>
   );

@@ -48,15 +48,16 @@ const Comments = ({ post }: Props) => {
       fetchComments(pageParam ? pageParam : "", post.id),
     getNextPageParam: (lastPage) => lastPage.previousCursor,
     initialPageParam: null as string | null,
+    select: (data) => ({
+      pages: [...data.pages].reverse(),
+      pageParams: [...data.pageParams].reverse(),
+    }),
     // staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   // Reverse the order of pages and flatten the comments
-  const comments =
-    data?.pages
-      .slice() // Create a shallow copy of pages array
-      .reverse() // Reverse the order of pages
-      .flatMap((page) => page.comments) || [];
+  const comments = data?.pages.flatMap((page) => page.comments) || [];
+
   if (status === "pending" && !isFetchingNextPage) return <CommentSkeleton />;
 
   if (status === "success" && !comments.length && !hasNextPage)
