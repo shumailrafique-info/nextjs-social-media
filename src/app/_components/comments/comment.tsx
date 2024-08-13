@@ -30,12 +30,14 @@ const Comment = ({ comment }: Props) => {
       {/* Content */}
       <div className="w-full">
         <div className="flex items-center sm:gap-2">
-          <Link
-            href={`/users/${comment.user.username}`}
-            className="block text-[14px] font-medium leading-[1.3] hover:underline"
-          >
-            {comment.user.displayName}
-          </Link>
+          <UserTooltip user={comment.user}>
+            <Link
+              href={`/users/${comment.user.username}`}
+              className="block text-[14px] font-medium leading-[1.3] hover:underline"
+            >
+              {comment.user.displayName}
+            </Link>
+          </UserTooltip>
           <p
             className="hidden text-[12px] text-muted-foreground sm:flex"
             suppressHydrationWarning
