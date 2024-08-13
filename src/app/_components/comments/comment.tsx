@@ -8,6 +8,7 @@ import { EllipsisIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/app/(main)/_providers/session-provider";
 import UserTooltip from "../user-tooltip";
+import MoreOptionsComment from "./more-options-comment";
 
 interface Props {
   comment: commentData;
@@ -55,9 +56,12 @@ const Comment = ({ comment }: Props) => {
       {/* Actions  */}
       {user.id === comment.user.id && (
         <div className="opacity-0 transition group-hover:opacity-100">
-          <Button className="" size={"icon"} variant={"outline"}>
-            <EllipsisIcon size={17} />
-          </Button>
+          {
+            <MoreOptionsComment
+              commentId={comment.id}
+              postId={comment.postId}
+            />
+          }
         </div>
       )}
     </div>

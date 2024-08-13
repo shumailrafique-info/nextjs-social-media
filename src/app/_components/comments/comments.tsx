@@ -1,11 +1,10 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import kyInstance from "@/lib/ky";
 import { commentPage, postData } from "@/lib/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
-import Comment from "./comment";
-import { Button } from "@/components/ui/button";
 import CommentSkeleton from "../comment-skeleton";
+import Comment from "./comment";
 
 interface Props {
   post: postData;
@@ -55,7 +54,6 @@ const Comments = ({ post }: Props) => {
     // staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  // Reverse the order of pages and flatten the comments
   const comments = data?.pages.flatMap((page) => page.comments) || [];
 
   if (status === "pending" && !isFetchingNextPage) return <CommentSkeleton />;
@@ -63,7 +61,7 @@ const Comments = ({ post }: Props) => {
   if (status === "success" && !comments.length && !hasNextPage)
     return (
       <p className="text-center text-sm text-muted-foreground">
-        No one has commented anything yet
+        No comments yet.
       </p>
     );
 
@@ -71,19 +69,12 @@ const Comments = ({ post }: Props) => {
     console.log(error);
     return (
       <p className="text-center text-sm text-destructive">
-        An error occured while loading comments of that posts.
+        An error occured while loading comments.
       </p>
     );
   }
   return (
     <div className="w-full space-y-2">
-      {/* Comments  */}
-      {/* {status === "success" && !hasNextPage && (
-        <p className="text-center text-sm text-muted-foreground">
-          No more comments.
-        </p>
-      )} */}
-
       {isFetchingNextPage && <CommentSkeleton />}
       {hasNextPage && (
         <div className="flex items-center justify-center">
@@ -91,8 +82,9 @@ const Comments = ({ post }: Props) => {
             className=""
             onClick={() => hasNextPage && !isFetching && fetchNextPage()}
             variant={"link"}
+            disabled={isFetching}
           >
-            Load Previous Comments
+            Load previous comments
           </Button>
         </div>
       )}

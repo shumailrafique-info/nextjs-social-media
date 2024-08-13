@@ -34,3 +34,37 @@ export async function createComment({
 
   return { success: true, data: { comment: { ...newComment } } };
 }
+
+export async function deleteComment({ commentId }: { commentId: string }) {
+  const { user } = await validateRequest();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  if (!commentId) {
+    throw new Error("Comment id is required");
+  }
+
+  const comment = await prisma.comment.findUnique({
+    where: {
+      id: commentId,
+    },
+  });
+
+  if (!comment) {
+    throw new Error("Comment not found");
+  }
+
+  if (comment.userId !== user.id) {
+    throw new Error("Unauthorized");
+  }
+
+  await prisma.comment.delete({
+    where: {
+      id: commentId,
+    },
+  });
+
+  return { success: true, data: { comment } };
+}

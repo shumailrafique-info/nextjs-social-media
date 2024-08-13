@@ -8,24 +8,23 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { postData } from "@/lib/types";
-import { MoreVertical } from "lucide-react";
+import { EllipsisIcon } from "lucide-react";
 import { useState } from "react";
-import DeletePostDialog from "./post-delete/delete-post-dialog";
+import DeleteCommentDialog from "./delete-comment-dialog";
 
 interface Props {
-  post: postData;
-  className?: string;
+  postId: string;
+  commentId: string;
 }
 
-const MoreOptionPostButton = ({ post }: Props) => {
+const MoreOptionsComment = ({ postId, commentId }: Props) => {
   const [openDeleteDianlog, setOpenDeleteDianlog] = useState(false);
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size={"icon"}>
-            <MoreVertical className="size-[19px] opacity-80" />
+            <EllipsisIcon className="size-[17px] opacity-80" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-32" align="end">
@@ -40,13 +39,14 @@ const MoreOptionPostButton = ({ post }: Props) => {
         </DropdownMenuContent>
       </DropdownMenu>
       {/* Post Delete Dianlog  */}
-      <DeletePostDialog
+      <DeleteCommentDialog
         open={openDeleteDianlog}
         onClose={() => setOpenDeleteDianlog(false)}
-        post={post}
+        postId={postId}
+        commentId={commentId}
       />
     </>
   );
 };
 
-export default MoreOptionPostButton;
+export default MoreOptionsComment;
