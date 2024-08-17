@@ -1,6 +1,6 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { notificationData } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { cn, formateRelativeDate } from "@/lib/utils";
 import { NotificationType } from "@prisma/client";
 import { AvatarFallback } from "@radix-ui/react-avatar";
 import { Heart, MessageCircle, User } from "lucide-react";
@@ -37,10 +37,13 @@ const Notification = ({ notification }: Props) => {
     <Link href={href} className="block">
       <article
         className={cn(
-          "flex gap-3 rounded-2xl bg-card dark:border shadow-md transition p-5 hover:bg-card/70 dark:hover:bg-primary/10",
+          "flex gap-3 rounded-2xl relative bg-card dark:border shadow-md transition p-5 hover:bg-gray-200 dark:hover:bg-primary/10",
           !notification.isRead && "bg-green-500/20"
         )}
       >
+        <div className="absolute right-5 top-5 text-xs text-muted-foreground">
+          {formateRelativeDate(notification.createdAt)}
+        </div>
         <div className="my-1">{icon}</div>
         <div className="space-y-3">
           <Avatar className="max-h-[35px] max-w-[35px]">

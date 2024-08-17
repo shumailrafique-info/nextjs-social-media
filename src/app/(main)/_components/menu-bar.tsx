@@ -1,23 +1,32 @@
-"use client";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Bell, Bookmark, Home, Mail } from "lucide-react";
+import { Bookmark, Home, Mail } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import NotificationButton from "./notification-button";
+import { validateRequest } from "@/auth";
+import prisma from "@/lib/prisma";
 
 interface Props {
   className?: string;
 }
 
-const MenuBar = ({ className }: Props) => {
-  const pathname = usePathname();
+const MenuBar = async ({ className }: Props) => {
+  const { user } = await validateRequest();
+
+  if (!user) return null;
+
+  const count = await prisma.notification.count({
+    where: {
+      recipientId: user.id,
+      isRead: false,
+    },
+  });
+
   return (
     <div className={cn("", className)}>
       <Button
         variant={"ghost"}
-        className={`flex items-center justify-start gap-3 ${
-          pathname === "/" && "bg-accent"
-        }`}
+        className={`flex items-center justify-start gap-3`}
         title="Home"
         asChild
       >
@@ -26,24 +35,12 @@ const MenuBar = ({ className }: Props) => {
           <span className="hidden lg:inline">Home</span>
         </Link>
       </Button>
+      <NotificationButton
+        initialData={{ data: { unreadCount: count }, success: true }}
+      />
       <Button
         variant={"ghost"}
-        className={`flex items-center justify-start gap-3 ${
-          pathname.startsWith("/notifications") && "bg-accent"
-        }`}
-        title="Notifications"
-        asChild
-      >
-        <Link href={"/notifications"}>
-          <Bell />
-          <span className="hidden lg:inline">Notifications</span>
-        </Link>
-      </Button>
-      <Button
-        variant={"ghost"}
-        className={`flex items-center justify-start gap-3 ${
-          pathname.startsWith("/messages") && "bg-accent"
-        }`}
+        className={`flex items-center justify-start gap-3`}
         title="Messages"
         asChild
       >
@@ -54,9 +51,7 @@ const MenuBar = ({ className }: Props) => {
       </Button>
       <Button
         variant={"ghost"}
-        className={`flex items-center justify-start gap-3 ${
-          pathname.startsWith("/bookmarks") && "bg-accent"
-        }`}
+        className={`flex items-center justify-start gap-3`}
         title="Bookmarks"
         asChild
       >

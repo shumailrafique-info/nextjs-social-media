@@ -2,10 +2,15 @@
 import InfiniteScrollContainer from "@/app/_components/infinite-scroll-container";
 import kyInstance from "@/lib/ky";
 import { notificationsPage } from "@/lib/types";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import PostSkeleton from "../../_components/post-skeleton";
 import Notification from "./notification";
+import { useEffect } from "react";
 
 export interface NotificationsApiResponse {
   success: boolean;
@@ -46,6 +51,24 @@ const Notifications = ({}: Props) => {
     initialPageParam: null as string | null,
     // staleTime: 1000 * 60 * 5, // 5 minutes
   });
+
+  const queryClient = useQueryClient();
+
+  const { mutate } = useMutation({
+    mutationFn: () => kyInstance.patch("/api/notifications/mark-as-read"),
+    onSuccess: () => {
+      queryClient.setQueryData(["unread-notification-count"], {
+        unreadCount: 0,
+      });
+    },
+    onError: (error) => {
+      console.log("Failed to mark notifications as read");
+    },
+  });
+
+  useEffect(() => {
+    mutate();
+  }, [mutate]);
 
   const notificaitons = data?.pages.flatMap((page) => page.notifications) || [];
 
