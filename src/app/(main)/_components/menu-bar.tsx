@@ -1,18 +1,23 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Bell, Bookmark, Home, Mail } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface Props {
   className?: string;
 }
 
 const MenuBar = ({ className }: Props) => {
+  const pathname = usePathname();
   return (
     <div className={cn("", className)}>
       <Button
         variant={"ghost"}
-        className="flex items-center justify-start gap-3"
+        className={`flex items-center justify-start gap-3 ${
+          pathname === "/" && "bg-accent"
+        }`}
         title="Home"
         asChild
       >
@@ -23,7 +28,9 @@ const MenuBar = ({ className }: Props) => {
       </Button>
       <Button
         variant={"ghost"}
-        className="flex items-center justify-start gap-3"
+        className={`flex items-center justify-start gap-3 ${
+          pathname.startsWith("/notifications") && "bg-accent"
+        }`}
         title="Notifications"
         asChild
       >
@@ -34,7 +41,9 @@ const MenuBar = ({ className }: Props) => {
       </Button>
       <Button
         variant={"ghost"}
-        className="flex items-center justify-start gap-3"
+        className={`flex items-center justify-start gap-3 ${
+          pathname.startsWith("/messages") && "bg-accent"
+        }`}
         title="Messages"
         asChild
       >
@@ -45,7 +54,9 @@ const MenuBar = ({ className }: Props) => {
       </Button>
       <Button
         variant={"ghost"}
-        className="flex items-center justify-start gap-3"
+        className={`flex items-center justify-start gap-3 ${
+          pathname.startsWith("/bookmarks") && "bg-accent"
+        }`}
         title="Bookmarks"
         asChild
       >

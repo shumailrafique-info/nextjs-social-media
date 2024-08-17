@@ -96,3 +96,27 @@ export interface bookmarkInformation {
   bookmarks: number;
   isBookmarkedByUser: boolean;
 }
+
+export const notificationsInclude = {
+  issuer: {
+    select: {
+      username: true,
+      avatarUrl: true,
+      displayName: true,
+    },
+  },
+  post: {
+    select: {
+      content: true,
+    },
+  },
+} satisfies Prisma.NotificationInclude;
+
+export type notificationData = Prisma.NotificationGetPayload<{
+  include: typeof notificationsInclude;
+}>;
+
+export interface notificationsPage {
+  notifications: notificationData[];
+  nextCursor: string | null;
+}

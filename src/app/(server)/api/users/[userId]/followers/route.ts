@@ -103,6 +103,15 @@ export async function POST(
       update: {},
     });
 
+    await prisma.notification.create({
+      data: {
+        recipientId: userId,
+        issuerId: loggedinUser.id,
+        type: "FOLLOW",
+        content: `${loggedinUser.displayName} started following you`,
+      },
+    });
+
     return Response.json(
       {
         success: true,
@@ -140,12 +149,21 @@ export async function DELETE(
         { status: 401 }
       );
 
-    await prisma.follow.deleteMany({
-      where: {
-        followerId: loggedinUser.id,
-        followingId: userId,
-      },
-    });
+    await prisma.$transaction([
+      prisma.follow.deleteMany({
+        where: {
+          followerId: loggedinUser.id,
+          followingId: userId,
+        },
+      }),
+      prisma.notification.deleteMany({
+        where: {
+          recipientId: userId,
+          issuerId: loggedinUser.id,
+          type: "FOLLOW",
+        },
+      }),
+    ]);
 
     return Response.json(
       {

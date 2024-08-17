@@ -54,7 +54,9 @@ const RegisterForm = ({}: Props) => {
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-900">Username*</FormLabel>
+              <FormLabel className="text-gray-900 dark:text-white">
+                Username*
+              </FormLabel>
               <FormControl>
                 <Input
                   disabled={isPending}
@@ -72,7 +74,9 @@ const RegisterForm = ({}: Props) => {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-900">Email*</FormLabel>
+              <FormLabel className="text-gray-900 dark:text-white">
+                Email*
+              </FormLabel>
               <FormControl>
                 <Input
                   disabled={isPending}
@@ -90,7 +94,9 @@ const RegisterForm = ({}: Props) => {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-900">Password*</FormLabel>
+              <FormLabel className="text-gray-900 dark:text-white">
+                Password*
+              </FormLabel>
               <div className="relative w-full">
                 <FormControl>
                   <Input

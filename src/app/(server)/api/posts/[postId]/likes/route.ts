@@ -102,7 +102,34 @@ export async function POST(
         userId: loggedinUser.id,
       },
       update: {},
+      include: {
+        post: true,
+      },
     });
+
+    if (!like.post) {
+      return Response.json(
+        {
+          success: false,
+          message: "Post not found. Invalid postId",
+        },
+        { status: 404 }
+      );
+    }
+
+    if (loggedinUser.id !== like.post.userId) {
+      await prisma.notification.create({
+        data: {
+          issuerId: loggedinUser.id,
+          type: "LIKE",
+          postId: like.postId,
+          recipientId: like.post.userId,
+          content: `${
+            loggedinUser.displayName
+          } liked your post "${like.post.content.slice(0, 20)}..."`,
+        },
+      });
+    }
 
     return Response.json(
       {
@@ -141,12 +168,22 @@ export async function DELETE(
         { status: 401 }
       );
 
-    await prisma.like.deleteMany({
-      where: {
-        userId: loggedinUser.id,
-        postId: postId,
-      },
-    });
+    await prisma.$transaction([
+      prisma.like.deleteMany({
+        where: {
+          userId: loggedinUser.id,
+          postId: postId,
+        },
+      }),
+      prisma.notification.deleteMany({
+        where: {
+          issuerId: loggedinUser.id,
+          type: "LIKE",
+          postId: postId,
+          recipientId: postId,
+        },
+      }),
+    ]);
 
     return Response.json(
       {

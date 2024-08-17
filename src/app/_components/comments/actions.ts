@@ -23,14 +23,31 @@ export async function createComment({
     throw new Error("Invalid content");
   }
 
-  const newComment = await prisma.comment.create({
-    data: {
-      content: contentValue,
-      postId: post.id,
-      userId: user.id,
-    },
-    include: getCommentDataInclude(user.id),
-  });
+  const [newComment] = await prisma.$transaction([
+    prisma.comment.create({
+      data: {
+        content: contentValue,
+        postId: post.id,
+        userId: user.id,
+      },
+      include: getCommentDataInclude(user.id),
+    }),
+    ...(post.user.id !== user.id
+      ? [
+          prisma.notification.create({
+            data: {
+              issuerId: user.id,
+              recipientId: post.user.id,
+              postId: post.id,
+              type: "COMMENT",
+              content: `${
+                user.displayName
+              } comment on your post ${post.content.slice(0, 20)}...`,
+            },
+          }),
+        ]
+      : []),
+  ]);
 
   return { success: true, data: { comment: { ...newComment } } };
 }

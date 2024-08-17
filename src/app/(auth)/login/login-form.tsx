@@ -53,7 +53,9 @@ const LoginForm = ({}: Props) => {
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-900">Username*</FormLabel>
+              <FormLabel className="text-gray-900 dark:text-white">
+                Username*
+              </FormLabel>
               <FormControl>
                 <Input
                   disabled={isPending}
@@ -71,7 +73,9 @@ const LoginForm = ({}: Props) => {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-900">Password*</FormLabel>
+              <FormLabel className="text-gray-900 dark:text-white">
+                Password*
+              </FormLabel>
               <div className="relative">
                 <FormControl className="relative">
                   <Input
