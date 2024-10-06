@@ -76,6 +76,8 @@
     "recharts": "^2.12.7",
     "slick-carousel": "^1.8.1",
     "sonner": "^1.5.0",
+    "stream-chat": "^8.40.9",
+    "stream-chat-react": "^12.1.0",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "uploadthing": "^6.13.2",

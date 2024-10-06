@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "~stream-chat-react/dist/css/v2/index.css";
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -66,4 +68,107 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.str-chat {
+  --str-chat__font-family: inherit;
+  --str-chat__primary-color: theme(colors.primary.DEFAULT);
+  --str-chat__on-primary-color: theme(colors.primary.foreground);
+  --str-chat__active-primary-color: theme(colors.primary.foreground);
+  --str-chat__primary-color-low-emphasis: color-mix(
+    in hsl,
+    hsl(var(--primary)) 10%,
+    transparent
+  );
+  --str-chat__background-color: theme(colors.card.DEFAULT);
+  --str-chat__secondary-background-color: theme(colors.card.DEFAULT);
+  --str-chat__message-textarea-background-color: theme(colors.background);
+  --str-chat__channel-preview-active-background-color: theme(
+    colors.accent.DEFAULT
+  );
+  --str-chat__channel-preview-hover-background-color: var(
+    --str-chat__channel-preview-active-background-color
+  );
+  --str-chat__secondary-surface-color: theme(colors.muted.DEFAULT);
+  --str-chat__own-message-bubble-color: theme(colors.primary.foreground);
+  --str-chat__primary-surface-color: theme(colors.primary.DEFAULT);
+  --str-chat__primary-surface-color-low-emphasis: var(
+    --str-chat__primary-color-low-emphasis
+  );
+  --str-chat__disabled-color: theme(colors.muted.DEFAULT);
+  --str-chat__cta-button-border-radius: var(--radius);
+}
+
+.str-chat-channel-list {
+  border-right: none;
+}
+
+.str-chat__channel-list-react .str-chat__channel-list-messenger-react {
+  padding-bottom: 0;
+}
+
+.str-chat__channel-search-bar-button--exit-search {
+  display: none;
+}
+
+.str-chat__channel-search-input--wrapper {
+  @apply bg-gray-100  dark:bg-black h-[34px] rounded-[0.5rem] focus-within:ring-1 focus-within:ring-ring !p-0 dark:bg-transparent border border-input text-sm shadow-sm file:text-sm !text-black dark:!text-white;
+}
+
+.str-chat__channel-search-input {
+  @apply text-black dark:text-white;
+}
+
+.str-chat__channel-preview-messenger--name {
+  @apply font-[500];
+}
+
+.str-chat__channel-preview-messenger--last-message {
+  @apply text-sm dark:text-muted-foreground;
+}
+
+.str-chat__channel-preview-messenger,
+.str-chat__channel-preview {
+  @apply hover:bg-gray-100/50 dark:hover:bg-gray-900;
+}
+.str-chat__channel-preview-unread-badge {
+  @apply flex h-5 w-auto items-center justify-center rounded-full bg-red-500 px-2 text-xs font-bold text-white;
+}
+.str-chat__channel-search-bar {
+  @apply border-b;
+}
+.str-chat__channel-search-results-header {
+  @apply !px-[1rem] !py-[7px] text-sm;
+}
+
+.str-chat__channel-search-container-searching {
+  @apply !px-[1rem] !py-[7px] text-sm;
+}
+
+.str-chat__channel-header-end {
+  row-gap: 0px !important;
+  @apply flex !gap-0 !gap-x-0 !gap-y-0 !space-x-0 !space-y-0;
+}
+
+.str-chat__channel-header-title,
+.str-chat__channel-header-info {
+  @apply text-start;
+}
+.str-chat__channel-header-info {
+  @apply !text-[14px];
+}
+
+.str-chat__channel-header-title {
+  @apply !font-[500] !text-[17px];
+}
+
+.str-chat__message-metadata {
+  @apply !text-sm;
+}
+
+.str-chat__message-text-inner {
+  @apply !text-[15px] !text-left;
+}
+.str-chat__message-simple-text-inner--has-attachment {
+  @apply !text-[15px] !text-left;
 }

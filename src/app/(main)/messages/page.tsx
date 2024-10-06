@@ -1,4 +1,4 @@
-import TrendsSidebar from "@/app/_components/trends-sidebar";
+import Chat from "@/app/(main)/messages/Chat";
 import { validateRequest } from "@/auth";
 import { Metadata } from "next";
 
@@ -16,11 +16,9 @@ const Page = async ({}: Props) => {
   return (
     <main className="flex w-full min-w-0 gap-5">
       <div className="w-full min-w-0 space-y-4">
-        <div className="rounded-xl bg-card px-5 py-4 text-center shadow-md dark:border">
-          Chatting feature is in progress will be available soon.
-        </div>
+        <Chat />
       </div>
-      <TrendsSidebar />
+      {/* <TrendsSidebar /> */}
     </main>
   );
 };
