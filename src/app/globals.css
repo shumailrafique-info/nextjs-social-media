@@ -172,3 +172,15 @@
 .str-chat__message-simple-text-inner--has-attachment {
   @apply !text-[15px] !text-left;
 }
+
+.str-chat__message-textarea-container {
+  @apply !items-start;
+}
+
+.str-chat__quoted-message-text {
+  @apply !text-[11px] text-left;
+}
+
+.str-chat__quoted-message-bubble__text {
+  @apply !text-[15px];
+}
